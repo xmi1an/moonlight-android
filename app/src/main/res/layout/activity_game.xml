@@ -130,6 +130,20 @@
         android:visibility="gone"
         android:elevation="9999dp" />
 
+    <ImageButton
+        android:id="@+id/floatingFullKeyboardButton"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="120dp"
+        android:background="@drawable/floating_menu_button"
+        android:src="@drawable/ic_full_keyboard"
+        android:padding="6dp"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/game_menu_toggle_virtual_keyboard_model"
+        android:visibility="gone"
+        android:elevation="9999dp" />
+
     <!-- Quick Bar -->
     <include layout="@layout/quick_bar" />
 

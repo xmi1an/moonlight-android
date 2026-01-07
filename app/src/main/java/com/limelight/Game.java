@@ -135,6 +135,8 @@ import java.util.Set;
 import android.view.SurfaceView;
 import android.view.ViewGroup;
 
+import java.util.Set;
+
 
 public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
         OnGenericMotionListener, OnTouchListener, NvConnectionListener, EvdevListener,
@@ -323,6 +325,12 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
     private float quickBarDX, quickBarDY;
     private boolean isQuickBarMoving = false;
     private float quickBarStartX, quickBarStartY;
+
+    // Floating full keyboard button
+    private ImageButton floatingFullKeyboardButton;
+    private float fullKeyboardButtonDX, fullKeyboardButtonDY;
+    private boolean isFullKeyboardButtonMoving = false;
+    private float fullKeyboardButtonStartX, fullKeyboardButtonStartY;
 
     // Queue for batching commitText payloads
     private static final int UTF8_CHUNK_SIZE = 512;
@@ -905,6 +913,9 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
         floatingKeyboardButton = findViewById(R.id.floatingKeyboardButton);
         setupFloatingKeyboardButton();
 
+        floatingFullKeyboardButton = findViewById(R.id.floatingFullKeyboardButton);
+        setupFloatingFullKeyboardButton();
+
         // Initialize Quick Bar
         setupQuickBar();
 
@@ -1032,60 +1043,114 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
     @SuppressLint("ClickableViewAccessibility")
     private void setupFloatingKeyboardButton() {
         if (floatingKeyboardButton != null) {
-            if (prefConfig.showFloatingKeyboardButton) {
-                floatingKeyboardButton.setVisibility(View.VISIBLE);
+            // Always start hidden - can be toggled from Quick Menu
+            floatingKeyboardButton.setVisibility(View.GONE);
 
-                // Touch listener for drag and click
-                floatingKeyboardButton.setOnTouchListener((view, event) -> {
-                    switch (event.getAction()) {
-                        case MotionEvent.ACTION_DOWN:
-                            keyboardButtonStartX = event.getRawX();
-                            keyboardButtonStartY = event.getRawY();
-                            keyboardButtonDX = view.getX() - event.getRawX();
-                            keyboardButtonDY = view.getY() - event.getRawY();
-                            isKeyboardButtonMoving = false;
-                            return true;
-                        case MotionEvent.ACTION_MOVE:
-                            float newX = event.getRawX() + keyboardButtonDX;
-                            float newY = event.getRawY() + keyboardButtonDY;
+            // Always set up touch listener for drag and click
+            floatingKeyboardButton.setOnTouchListener((view, event) -> {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        keyboardButtonStartX = event.getRawX();
+                        keyboardButtonStartY = event.getRawY();
+                        keyboardButtonDX = view.getX() - event.getRawX();
+                        keyboardButtonDY = view.getY() - event.getRawY();
+                        isKeyboardButtonMoving = false;
+                        return true;
+                    case MotionEvent.ACTION_MOVE:
+                        float newX = event.getRawX() + keyboardButtonDX;
+                        float newY = event.getRawY() + keyboardButtonDY;
 
-                            // Check if it's a move or just a tap
-                            if (Math.abs(event.getRawX() - keyboardButtonStartX) > CLICK_ACTION_THRESHOLD ||
-                                    Math.abs(event.getRawY() - keyboardButtonStartY) > CLICK_ACTION_THRESHOLD) {
-                                isKeyboardButtonMoving = true;
-                            }
+                        // Check if it's a move or just a tap
+                        if (Math.abs(event.getRawX() - keyboardButtonStartX) > CLICK_ACTION_THRESHOLD ||
+                                Math.abs(event.getRawY() - keyboardButtonStartY) > CLICK_ACTION_THRESHOLD) {
+                            isKeyboardButtonMoving = true;
+                        }
 
-                            // Ensure the button stays within screen bounds
-                            if (newX < 0) newX = 0;
-                            if (newY < 0) newY = 0;
+                        // Ensure the button stays within screen bounds
+                        if (newX < 0) newX = 0;
+                        if (newY < 0) newY = 0;
 
-                            int maxOffsetX = getWindow().getDecorView().getWidth() - view.getWidth();
-                            if (newX > maxOffsetX) {
-                                newX = maxOffsetX;
-                            }
+                        int maxOffsetX = getWindow().getDecorView().getWidth() - view.getWidth();
+                        if (newX > maxOffsetX) {
+                            newX = maxOffsetX;
+                        }
 
-                            int maxOffsetY = getWindow().getDecorView().getHeight() - view.getHeight();
-                            if (newY > maxOffsetY) {
-                                newY = maxOffsetY;
-                            }
+                        int maxOffsetY = getWindow().getDecorView().getHeight() - view.getHeight();
+                        if (newY > maxOffsetY) {
+                            newY = maxOffsetY;
+                        }
 
-                            view.setX(newX);
-                            view.setY(newY);
-                            return true;
-                        case MotionEvent.ACTION_UP:
-                            if (!isKeyboardButtonMoving) {
-                                // It's a click event, toggle system keyboard
-                                toggleKeyboard();
-                            }
-                            isKeyboardButtonMoving = false;
-                            return true;
-                        default:
-                            return false;
-                    }
-                });
-            } else {
-                floatingKeyboardButton.setVisibility(View.GONE);
-            }
+                        view.setX(newX);
+                        view.setY(newY);
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        if (!isKeyboardButtonMoving) {
+                            // It's a click event, toggle system keyboard
+                            toggleKeyboard();
+                        }
+                        isKeyboardButtonMoving = false;
+                        return true;
+                    default:
+                        return false;
+                }
+            });
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void setupFloatingFullKeyboardButton() {
+        if (floatingFullKeyboardButton != null) {
+            // Always start hidden - can be toggled from Quick Menu
+            floatingFullKeyboardButton.setVisibility(View.GONE);
+
+            // Always set up touch listener for drag and click
+            floatingFullKeyboardButton.setOnTouchListener((view, event) -> {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        fullKeyboardButtonStartX = event.getRawX();
+                        fullKeyboardButtonStartY = event.getRawY();
+                        fullKeyboardButtonDX = view.getX() - event.getRawX();
+                        fullKeyboardButtonDY = view.getY() - event.getRawY();
+                        isFullKeyboardButtonMoving = false;
+                        return true;
+                    case MotionEvent.ACTION_MOVE:
+                        float newX = event.getRawX() + fullKeyboardButtonDX;
+                        float newY = event.getRawY() + fullKeyboardButtonDY;
+
+                        // Check if it's a move or just a tap
+                        if (Math.abs(event.getRawX() - fullKeyboardButtonStartX) > CLICK_ACTION_THRESHOLD ||
+                                Math.abs(event.getRawY() - fullKeyboardButtonStartY) > CLICK_ACTION_THRESHOLD) {
+                            isFullKeyboardButtonMoving = true;
+                        }
+
+                        // Ensure the button stays within screen bounds
+                        if (newX < 0) newX = 0;
+                        if (newY < 0) newY = 0;
+
+                        int maxOffsetX = getWindow().getDecorView().getWidth() - view.getWidth();
+                        if (newX > maxOffsetX) {
+                            newX = maxOffsetX;
+                        }
+
+                        int maxOffsetY = getWindow().getDecorView().getHeight() - view.getHeight();
+                        if (newY > maxOffsetY) {
+                            newY = maxOffsetY;
+                        }
+
+                        view.setX(newX);
+                        view.setY(newY);
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        if (!isFullKeyboardButtonMoving) {
+                            // It's a click event, toggle in-app full keyboard
+                            toggleFullKeyboard();
+                        }
+                        isFullKeyboardButtonMoving = false;
+                        return true;
+                    default:
+                        return false;
+                }
+            });
         }
     }
 
@@ -1099,96 +1164,120 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
             return;
         }
 
-        if (prefConfig.enableQuickBar) {
-            quickBarContainer.setVisibility(View.VISIBLE);
+        // Always start hidden - can be toggled from Quick Menu
+        quickBarContainer.setVisibility(View.GONE);
 
-            // Set up action buttons
-            ImageButton keyboardBtn = findViewById(R.id.quickBarKeyboard);
-            ImageButton zoomBtn = findViewById(R.id.quickBarZoom);
-            ImageButton hudBtn = findViewById(R.id.quickBarHud);
-            ImageButton controllerBtn = findViewById(R.id.quickBarController);
-            ImageButton disconnectBtn = findViewById(R.id.quickBarDisconnect);
+        // Set up action buttons - show only user-selected ones from settings
+        ImageButton keyboardBtn = findViewById(R.id.quickBarKeyboard);
+        ImageButton zoomBtn = findViewById(R.id.quickBarZoom);
+        ImageButton hudBtn = findViewById(R.id.quickBarHud);
+        ImageButton controllerBtn = findViewById(R.id.quickBarController);
+        ImageButton disconnectBtn = findViewById(R.id.quickBarDisconnect);
 
-            if (keyboardBtn != null) {
+        Set<String> selectedActions = prefConfig.quickBarActions;
+
+        if (keyboardBtn != null) {
+            if (selectedActions != null && selectedActions.contains("keyboard")) {
+                keyboardBtn.setVisibility(View.VISIBLE);
                 keyboardBtn.setOnClickListener(v -> {
                     toggleKeyboard();
                     collapseQuickBar();
                 });
+            } else {
+                keyboardBtn.setVisibility(View.GONE);
             }
+        }
 
-            if (zoomBtn != null) {
+        if (zoomBtn != null) {
+            if (selectedActions != null && selectedActions.contains("zoom")) {
+                zoomBtn.setVisibility(View.VISIBLE);
                 zoomBtn.setOnClickListener(v -> {
                     toggleZoomMode();
                     collapseQuickBar();
                 });
+            } else {
+                zoomBtn.setVisibility(View.GONE);
             }
+        }
 
-            if (hudBtn != null) {
+        if (hudBtn != null) {
+            if (selectedActions != null && selectedActions.contains("hud")) {
+                hudBtn.setVisibility(View.VISIBLE);
                 hudBtn.setOnClickListener(v -> {
                     toggleHUD();
                     collapseQuickBar();
                 });
+            } else {
+                hudBtn.setVisibility(View.GONE);
             }
+        }
 
-            if (controllerBtn != null) {
+        if (controllerBtn != null) {
+            if (selectedActions != null && selectedActions.contains("controller")) {
+                controllerBtn.setVisibility(View.VISIBLE);
                 controllerBtn.setOnClickListener(v -> {
                     toggleVirtualController();
                     collapseQuickBar();
                 });
+            } else {
+                controllerBtn.setVisibility(View.GONE);
             }
+        }
 
-            if (disconnectBtn != null) {
+        if (disconnectBtn != null) {
+            if (selectedActions != null && selectedActions.contains("disconnect")) {
+                disconnectBtn.setVisibility(View.VISIBLE);
                 disconnectBtn.setOnClickListener(v -> {
                     collapseQuickBar();
                     disconnect();
                 });
+            } else {
+                disconnectBtn.setVisibility(View.GONE);
             }
-
-            // Toggle button - expand/collapse and drag
-            quickBarToggle.setOnTouchListener((view, event) -> {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        quickBarStartX = event.getRawX();
-                        quickBarStartY = event.getRawY();
-                        quickBarDX = quickBarContainer.getX() - event.getRawX();
-                        quickBarDY = quickBarContainer.getY() - event.getRawY();
-                        isQuickBarMoving = false;
-                        return true;
-                    case MotionEvent.ACTION_MOVE:
-                        float newX = event.getRawX() + quickBarDX;
-                        float newY = event.getRawY() + quickBarDY;
-
-                        if (Math.abs(event.getRawX() - quickBarStartX) > CLICK_ACTION_THRESHOLD ||
-                                Math.abs(event.getRawY() - quickBarStartY) > CLICK_ACTION_THRESHOLD) {
-                            isQuickBarMoving = true;
-                        }
-
-                        // Keep within bounds
-                        if (newX < 0) newX = 0;
-                        if (newY < 0) newY = 0;
-
-                        int maxOffsetX = getWindow().getDecorView().getWidth() - quickBarContainer.getWidth();
-                        if (newX > maxOffsetX) newX = maxOffsetX;
-
-                        int maxOffsetY = getWindow().getDecorView().getHeight() - quickBarContainer.getHeight();
-                        if (newY > maxOffsetY) newY = maxOffsetY;
-
-                        quickBarContainer.setX(newX);
-                        quickBarContainer.setY(newY);
-                        return true;
-                    case MotionEvent.ACTION_UP:
-                        if (!isQuickBarMoving) {
-                            toggleQuickBarExpanded();
-                        }
-                        isQuickBarMoving = false;
-                        return true;
-                    default:
-                        return false;
-                }
-            });
-        } else {
-            quickBarContainer.setVisibility(View.GONE);
         }
+
+        // Toggle button - expand/collapse and drag
+        quickBarToggle.setOnTouchListener((view, event) -> {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    quickBarStartX = event.getRawX();
+                    quickBarStartY = event.getRawY();
+                    quickBarDX = quickBarContainer.getX() - event.getRawX();
+                    quickBarDY = quickBarContainer.getY() - event.getRawY();
+                    isQuickBarMoving = false;
+                    return true;
+                case MotionEvent.ACTION_MOVE:
+                    float newX = event.getRawX() + quickBarDX;
+                    float newY = event.getRawY() + quickBarDY;
+
+                    if (Math.abs(event.getRawX() - quickBarStartX) > CLICK_ACTION_THRESHOLD ||
+                            Math.abs(event.getRawY() - quickBarStartY) > CLICK_ACTION_THRESHOLD) {
+                        isQuickBarMoving = true;
+                    }
+
+                    // Keep within bounds
+                    if (newX < 0) newX = 0;
+                    if (newY < 0) newY = 0;
+
+                    int maxOffsetX = getWindow().getDecorView().getWidth() - quickBarContainer.getWidth();
+                    if (newX > maxOffsetX) newX = maxOffsetX;
+
+                    int maxOffsetY = getWindow().getDecorView().getHeight() - quickBarContainer.getHeight();
+                    if (newY > maxOffsetY) newY = maxOffsetY;
+
+                    quickBarContainer.setX(newX);
+                    quickBarContainer.setY(newY);
+                    return true;
+                case MotionEvent.ACTION_UP:
+                    if (!isQuickBarMoving) {
+                        toggleQuickBarExpanded();
+                    }
+                    isQuickBarMoving = false;
+                    return true;
+                default:
+                    return false;
+            }
+        });
     }
 
     private void toggleQuickBarExpanded() {
@@ -4485,6 +4574,24 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
         if (floatingKeyboardButton != null) {
             boolean isVisible = floatingKeyboardButton.getVisibility() == View.VISIBLE;
             floatingKeyboardButton.setVisibility(isVisible ? View.GONE : View.VISIBLE);
+        }
+    }
+
+    public void toggleQuickBarVisibility() {
+        if (quickBarContainer != null) {
+            boolean isVisible = quickBarContainer.getVisibility() == View.VISIBLE;
+            quickBarContainer.setVisibility(isVisible ? View.GONE : View.VISIBLE);
+            // Collapse when hiding
+            if (isVisible) {
+                collapseQuickBar();
+            }
+        }
+    }
+
+    public void toggleFloatingFullKeyboardButtonVisibility() {
+        if (floatingFullKeyboardButton != null) {
+            boolean isVisible = floatingFullKeyboardButton.getVisibility() == View.VISIBLE;
+            floatingFullKeyboardButton.setVisibility(isVisible ? View.GONE : View.VISIBLE);
         }
     }
 

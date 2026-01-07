@@ -6,6 +6,10 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.view.Display;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import com.limelight.nvstream.jni.MoonBridge;
 import com.limelight.profiles.ProfilesManager;
 
@@ -118,6 +122,7 @@ public class PreferenceConfiguration {
     private static final String CHECKBOX_SHOW_OVERLAY_ZOOM_TOGGLE_BUTTON = "checkbox_show_overlay_zoom_toggle_button";
     private static final String CHECKBOX_ENABLE_FLOATING_KEYBOARD_BUTTON = "checkbox_enable_floating_keyboard_button";
     private static final String CHECKBOX_ENABLE_QUICK_BAR = "checkbox_enable_quick_bar";
+    private static final String QUICK_BAR_ACTIONS = "quick_bar_actions";
 
     //竖屏模式
     private static final String CHECKBOX_AUTO_ORIENTATION = "checkbox_auto_orientation";
@@ -212,6 +217,7 @@ public class PreferenceConfiguration {
     private static final boolean DEFAULT_SHOW_OVERLAY_TOGGLE_BUTTON = false;
     private static final boolean DEFAULT_ENABLE_FLOATING_KEYBOARD_BUTTON = false;
     private static final boolean DEFAULT_ENABLE_QUICK_BAR = false;
+    private static final Set<String> DEFAULT_QUICK_BAR_ACTIONS = new HashSet<>(Arrays.asList("keyboard", "zoom", "hud", "controller", "disconnect"));
 
     private static final boolean DEFAULT_REMEMBER_ZOOM_PAN = false;
     private static final float DEFAULT_ZOOM_SCALE = 1.0f;
@@ -288,6 +294,7 @@ public class PreferenceConfiguration {
     public boolean showOverlayZoomToggleButton;
     public boolean showFloatingKeyboardButton;
     public boolean enableQuickBar;
+    public Set<String> quickBarActions;
 
     //Invert video width/height
     public boolean autoInvertVideoResolution;
@@ -946,6 +953,7 @@ private static int getFramePacingValue(Context context) {
         config.showOverlayZoomToggleButton = prefs.getBoolean(CHECKBOX_SHOW_OVERLAY_ZOOM_TOGGLE_BUTTON, DEFAULT_SHOW_OVERLAY_TOGGLE_BUTTON);
         config.showFloatingKeyboardButton = prefs.getBoolean(CHECKBOX_ENABLE_FLOATING_KEYBOARD_BUTTON, DEFAULT_ENABLE_FLOATING_KEYBOARD_BUTTON);
         config.enableQuickBar = prefs.getBoolean(CHECKBOX_ENABLE_QUICK_BAR, DEFAULT_ENABLE_QUICK_BAR);
+        config.quickBarActions = prefs.getStringSet(QUICK_BAR_ACTIONS, DEFAULT_QUICK_BAR_ACTIONS);
         config.autoOrientation = prefs.getBoolean(CHECKBOX_AUTO_ORIENTATION,false);
         config.autoInvertVideoResolution = prefs.getBoolean(AUTO_INVERT_VIDEO_RESOLUTION_PREF_STRING, DEFAULT_AUTO_INVERT_VIDEO_RESOLUTION);
         config.resolutionScaleFactor = prefs.getInt(RESOLUTION_SCALE_FACTOR_PREF_STRING, DEFAULT_RESOLUTION_SCALE_FACTOR);

@@ -619,17 +619,12 @@
             android:summary="@string/summary_show_overlay_zoom_toggle_button"
             android:title="@string/title_show_overlay_zoom_toggle_button"
             app:iconSpaceReserved="false" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="checkbox_enable_floating_keyboard_button"
-            android:summary="@string/summary_show_floating_keyboard_button"
-            android:title="@string/title_show_floating_keyboard_button"
-            app:iconSpaceReserved="false" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="checkbox_enable_quick_bar"
-            android:summary="@string/summary_enable_quick_bar"
-            android:title="@string/title_enable_quick_bar"
+        <MultiSelectListPreference
+            android:key="quick_bar_actions"
+            android:entries="@array/quick_bar_action_labels"
+            android:entryValues="@array/quick_bar_action_values"
+            android:summary="@string/summary_quick_bar_actions"
+            android:title="@string/title_quick_bar_actions"
             app:iconSpaceReserved="false" />
         <CheckBoxPreference
             android:defaultValue="false"

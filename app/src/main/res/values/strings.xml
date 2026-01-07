@@ -371,6 +371,8 @@
     <string name="game_menu_toggle_hud">Toggle Performance Overlay</string>
     <string name="game_menu_toggle_floating_button">Toggle Floating Button</string>
     <string name="game_menu_toggle_floating_keyboard_button">Toggle Floating Keyboard Button</string>
+    <string name="game_menu_toggle_quick_bar">Toggle Quick Bar</string>
+    <string name="game_menu_toggle_floating_full_keyboard_button">Toggle Floating Full Keyboard Button</string>
     <string name="game_menu_select_mouse_mode">Select Mouse mode</string>
     <string name="game_menu_select_steam_mode">Select Stream mode</string>
     <string name="game_menu_enable_zoom_mode">Enable Pan/Zoom</string>
@@ -462,6 +464,25 @@
     <string name="title_enable_quick_bar">Enable Quick Bar</string>
     <string name="summary_enable_quick_bar">Show an expandable quick access bar with common actions during streaming.</string>
     <string name="quick_bar_toggle">Toggle Quick Bar</string>
+    <string name="title_quick_bar_actions">Quick Bar Actions</string>
+    <string name="summary_quick_bar_actions">Select which buttons appear in the Quick Bar</string>
+
+    <string-array name="quick_bar_action_labels">
+        <item>System Keyboard</item>
+        <item>Pan/Zoom Mode</item>
+        <item>Performance HUD</item>
+        <item>On-screen Controller</item>
+        <item>Disconnect</item>
+    </string-array>
+
+    <string-array name="quick_bar_action_values">
+        <item>keyboard</item>
+        <item>zoom</item>
+        <item>hud</item>
+        <item>controller</item>
+        <item>disconnect</item>
+    </string-array>
+
     <string name="title_virtual_trackpad_settings">Virtual Trackpad Settings</string>
     <string name="title_quit_dialog">Back Menu</string>
     <string name="summary_quit_dialog">When enabled, clicking the physical back button on the streaming interface will show related options!\nSoft keyboard, performance information, touch mode switching, send special keys</string>
