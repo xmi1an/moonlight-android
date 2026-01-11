@@ -1053,7 +1053,33 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
             boolean wasVisible = prefs.getBoolean("floating_keyboard_button_visible", false);
             floatingKeyboardButton.setVisibility(wasVisible ? View.VISIBLE : View.GONE);
 
-            // Always set up touch listener for drag and click
+            // Update color if already locked
+            if (streamContainer != null && streamContainer.isKeepKeyboardOpen()) {
+                floatingKeyboardButton.setColorFilter(android.graphics.Color.GREEN, android.graphics.PorterDuff.Mode.SRC_IN);
+            }
+
+            // Long press handler
+            final android.os.Handler longPressHandler = new android.os.Handler(android.os.Looper.getMainLooper());
+            final Runnable longPressRunnable = () -> {
+                // Long press detected - toggle keyboard lock
+                toggleKeepKeyboardOpen();
+                // Update color: green when locked, default when unlocked
+                if (streamContainer != null && streamContainer.isKeepKeyboardOpen()) {
+                    floatingKeyboardButton.setColorFilter(android.graphics.Color.GREEN, android.graphics.PorterDuff.Mode.SRC_IN);
+                    Toast.makeText(Game.this, getString(R.string.game_menu_keyboard_locked), Toast.LENGTH_SHORT).show();
+                } else {
+                    floatingKeyboardButton.clearColorFilter();
+                    Toast.makeText(Game.this, getString(R.string.game_menu_keyboard_unlocked), Toast.LENGTH_SHORT).show();
+                }
+                // Vibrate feedback
+                android.os.Vibrator vibrator = (android.os.Vibrator) getSystemService(VIBRATOR_SERVICE);
+                if (vibrator != null) {
+                    vibrator.vibrate(50);
+                }
+                isKeyboardButtonMoving = true; // Prevent click after long press
+            };
+
+            // Always set up touch listener for drag, click, and long press
             floatingKeyboardButton.setOnTouchListener((view, event) -> {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
@@ -1062,6 +1088,8 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                         keyboardButtonDX = view.getX() - event.getRawX();
                         keyboardButtonDY = view.getY() - event.getRawY();
                         isKeyboardButtonMoving = false;
+                        // Start long press timer (500ms)
+                        longPressHandler.postDelayed(longPressRunnable, 500);
                         return true;
                     case MotionEvent.ACTION_MOVE:
                         float newX = event.getRawX() + keyboardButtonDX;
@@ -1071,6 +1099,7 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                         if (Math.abs(event.getRawX() - keyboardButtonStartX) > CLICK_ACTION_THRESHOLD ||
                                 Math.abs(event.getRawY() - keyboardButtonStartY) > CLICK_ACTION_THRESHOLD) {
                             isKeyboardButtonMoving = true;
+                            longPressHandler.removeCallbacks(longPressRunnable); // Cancel long press on move
                         }
 
                         // Ensure the button stays within screen bounds
@@ -1091,10 +1120,15 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                         view.setY(newY);
                         return true;
                     case MotionEvent.ACTION_UP:
+                        longPressHandler.removeCallbacks(longPressRunnable); // Cancel long press
                         if (!isKeyboardButtonMoving) {
                             // It's a click event, toggle system keyboard
                             toggleKeyboard();
                         }
+                        isKeyboardButtonMoving = false;
+                        return true;
+                    case MotionEvent.ACTION_CANCEL:
+                        longPressHandler.removeCallbacks(longPressRunnable);
                         isKeyboardButtonMoving = false;
                         return true;
                     default:
@@ -1275,21 +1309,15 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                             isQuickBarMenuOpen = false;
                             // Return to idle state: rotate back and lower opacity
                             quickBarToggle.animate().rotation(0).alpha(0.4f).setDuration(200).start();
-                            // Restore keyboard if locked
-                            restoreKeyboardIfLocked();
                         } else if (quickBarMenu != null) {
                             // Active state: rotate and full opacity
                             quickBarToggle.animate().rotation(45).alpha(1.0f).setDuration(200).start();
                             quickBarMenu.show(quickBarToggle);
                             isQuickBarMenuOpen = true;
-                            // Restore keyboard if locked (popup might have affected it)
-                            restoreKeyboardIfLocked();
                             quickBarMenu.setOnDismissListener(() -> {
                                 isQuickBarMenuOpen = false;
                                 // Return to idle state
                                 quickBarToggle.animate().rotation(0).alpha(0.4f).setDuration(200).start();
-                                // Restore keyboard if locked
-                                restoreKeyboardIfLocked();
                             });
                         }
                     } else {

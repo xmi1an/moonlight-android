@@ -52,8 +52,8 @@ public class QuickBarMenu {
 
         popupWindow.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         popupWindow.setTouchable(true);
-        // Focusable so outside touch (including FAB) dismisses it
-        popupWindow.setFocusable(true);
+        // Non-focusable so keyboard stays open - toggle handled by isQuickBarMenuOpen flag
+        popupWindow.setFocusable(false);
         popupWindow.setOutsideTouchable(true);
         popupWindow.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
         popupWindow.setElevation(20f);
@@ -62,29 +62,19 @@ public class QuickBarMenu {
     }
 
     private void setupButtons() {
-        ImageButton keyboardBtn = menuView.findViewById(R.id.quickBarKeyboard);
         ImageButton zoomBtn = menuView.findViewById(R.id.quickBarZoom);
         ImageButton hudBtn = menuView.findViewById(R.id.quickBarHud);
         ImageButton controllerBtn = menuView.findViewById(R.id.quickBarController);
         ImageButton disconnectBtn = menuView.findViewById(R.id.quickBarDisconnect);
-        ImageButton lockKeyboardBtn = menuView.findViewById(R.id.quickBarLockKeyboard);
 
         // Apply white tint to icons
-        int[] buttonIds = {R.id.quickBarKeyboard, R.id.quickBarZoom, R.id.quickBarHud,
-                          R.id.quickBarController, R.id.quickBarDisconnect, R.id.quickBarLockKeyboard};
+        int[] buttonIds = {R.id.quickBarZoom, R.id.quickBarHud,
+                          R.id.quickBarController, R.id.quickBarDisconnect};
         for (int id : buttonIds) {
             ImageButton btn = menuView.findViewById(id);
             if (btn != null) {
                 btn.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
             }
-        }
-
-        if (keyboardBtn != null) {
-            keyboardBtn.setOnClickListener(v -> {
-                // Dismiss first so the view gets focus back before toggling keyboard
-                dismiss();
-                if (callbacks != null) callbacks.onKeyboardToggle();
-            });
         }
 
         if (zoomBtn != null) {
@@ -114,25 +104,8 @@ public class QuickBarMenu {
                 dismiss();
             });
         }
-
-        if (lockKeyboardBtn != null) {
-            lockKeyboardBtn.setOnClickListener(v -> {
-                if (callbacks != null) callbacks.onLockKeyboardToggle();
-                updateLockKeyboardIcon(lockKeyboardBtn);
-                dismiss();
-            });
-        }
     }
 
-    private void updateLockKeyboardIcon(ImageButton button) {
-        if (button != null && callbacks != null) {
-            if (callbacks.isLockKeyboardEnabled()) {
-                button.setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
-            } else {
-                button.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
-            }
-        }
-    }
 
     /**
      * Show the menu near the anchor view, automatically adjusting direction
@@ -140,10 +113,6 @@ public class QuickBarMenu {
      */
     public void show(View anchor) {
         if (popupWindow == null || anchor == null) return;
-
-        // Update lock keyboard icon state
-        ImageButton lockKeyboardBtn = menuView.findViewById(R.id.quickBarLockKeyboard);
-        updateLockKeyboardIcon(lockKeyboardBtn);
 
         // Measure the popup
         menuView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);

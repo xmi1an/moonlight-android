@@ -532,6 +532,8 @@
         <item>win_tab</item>
     </string-array>
 
+    <string name="game_menu_keyboard_locked">Keyboard locked - stays open</string>
+    <string name="game_menu_keyboard_unlocked">Keyboard unlocked</string>
 
     <string-array name="quick_bar_action_labels">
         <item>System Keyboard</item>

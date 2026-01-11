@@ -10,16 +10,6 @@
     android:elevation="10dp">
 
     <ImageButton
-        android:id="@+id/quickBarKeyboard"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_android_keyboard"
-        android:scaleType="fitCenter"
-        android:padding="8dp"
-        android:contentDescription="@string/game_menu_toggle_keyboard" />
-
-    <ImageButton
         android:id="@+id/quickBarZoom"
         android:layout_width="40dp"
         android:layout_height="40dp"
@@ -58,15 +48,5 @@
         android:scaleType="fitCenter"
         android:padding="8dp"
         android:contentDescription="@string/game_menu_disconnect" />
-
-    <ImageButton
-        android:id="@+id/quickBarLockKeyboard"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_lock_keyboard"
-        android:scaleType="fitCenter"
-        android:padding="8dp"
-        android:contentDescription="@string/game_menu_keep_keyboard_open" />
 
 </LinearLayout>
