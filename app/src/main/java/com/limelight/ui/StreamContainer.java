@@ -157,8 +157,49 @@ public class StreamContainer extends FrameLayout implements SurfaceHolder.Callba
         this.commitTextEnabled = enabled;
     }
 
+    private boolean keepKeyboardOpen = false;
+
+    public void setKeepKeyboardOpen(boolean keep) {
+        this.keepKeyboardOpen = keep;
+    }
+
+    public boolean isKeepKeyboardOpen() {
+        return keepKeyboardOpen;
+    }
+
+    private boolean isKeyboardVisible() {
+        // More reliable keyboard visibility detection using display frame
+        android.graphics.Rect r = new android.graphics.Rect();
+        getWindowVisibleDisplayFrame(r);
+        int screenHeight = getRootView().getHeight();
+        // If more than 15% of screen height is hidden, keyboard is likely visible
+        int keypadHeight = screenHeight - r.bottom;
+        return keypadHeight > screenHeight * 0.15;
+    }
+
     @Override
     public boolean onKeyPreIme(int keyCode, KeyEvent event) {
+        // When lock keyboard is enabled and keyboard is visible,
+        // open quick menu directly and re-show keyboard
+        if (keyCode == KeyEvent.KEYCODE_BACK && keepKeyboardOpen && isKeyboardVisible()) {
+            if (event.getAction() == KeyEvent.ACTION_UP) {
+                // Directly show the game menu
+                if (game != null && prefConfig != null && prefConfig.enableBackMenu) {
+                    game.showGameMenu(null);
+                }
+                // Re-show keyboard with slight delay
+                postDelayed(() -> {
+                    android.view.inputmethod.InputMethodManager imm =
+                        (android.view.inputmethod.InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (imm != null && keepKeyboardOpen) {
+                        imm.showSoftInput(this, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);
+                    }
+                }, 300);
+            }
+            // Consume the event to prevent default handling
+            return true;
+        }
+
         if (mInputCallbacks != null) {
             if (event.getAction() == KeyEvent.ACTION_DOWN) {
                 if (mInputCallbacks.handleKeyDown(event)) return true;

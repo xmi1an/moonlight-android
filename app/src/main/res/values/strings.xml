@@ -373,6 +373,9 @@
     <string name="game_menu_toggle_floating_keyboard_button">Toggle Floating Keyboard Button</string>
     <string name="game_menu_toggle_quick_bar">Toggle Quick Bar</string>
     <string name="game_menu_toggle_floating_full_keyboard_button">Toggle Floating Full Keyboard Button</string>
+    <string name="game_menu_keep_keyboard_open">Keep Keyboard Open</string>
+    <string name="game_menu_allow_keyboard_close">Allow Keyboard Close</string>
+    <string name="game_menu_toggle_shortcut_bar">Toggle Shortcut Bar</string>
     <string name="game_menu_select_mouse_mode">Select Mouse mode</string>
     <string name="game_menu_select_steam_mode">Select Stream mode</string>
     <string name="game_menu_enable_zoom_mode">Enable Pan/Zoom</string>
@@ -467,12 +470,76 @@
     <string name="title_quick_bar_actions">Quick Bar Actions</string>
     <string name="summary_quick_bar_actions">Select which buttons appear in the Quick Bar</string>
 
+    <!-- Circular Quick Bar -->
+    <string name="circular_quickbar_toggle">Keyboard Shortcuts</string>
+    <string name="shortcut_alt_f4">Alt+F4 (Close)</string>
+    <string name="shortcut_win_d">Win+D (Desktop)</string>
+    <string name="shortcut_alt_tab">Alt+Tab (Switch)</string>
+    <string name="shortcut_win">Windows Key</string>
+    <string name="shortcut_escape">Escape</string>
+    <string name="shortcut_task_mgr">Task Manager</string>
+    <string name="shortcut_win_tab">Win+Tab (Task View)</string>
+    <string name="shortcut_cad">Ctrl+Alt+Del</string>
+
+    <!-- Shortcut Bar Settings -->
+    <string name="title_shortcut_bar_actions">Shortcut Bar Buttons</string>
+    <string name="summary_shortcut_bar_actions">Select which shortcuts appear in the bar</string>
+
+    <string-array name="shortcut_bar_action_labels">
+        <item>Alt+F4 (Close Window)</item>
+        <item>Win+D (Show Desktop)</item>
+        <item>Windows Key</item>
+        <item>Win+Tab (Task View)</item>
+        <item>Alt+Tab (Switch Windows)</item>
+        <item>Escape</item>
+        <item>Task Manager</item>
+        <item>Ctrl+Alt+Del</item>
+        <item>Copy (Ctrl+C)</item>
+        <item>Paste (Ctrl+V)</item>
+        <item>Undo (Ctrl+Z)</item>
+        <item>Save (Ctrl+S)</item>
+        <item>Select All (Ctrl+A)</item>
+        <item>File Explorer (Win+E)</item>
+        <item>Lock Screen (Win+L)</item>
+        <item>Back (Alt+Left)</item>
+        <item>Forward (Alt+Right)</item>
+    </string-array>
+
+    <string-array name="shortcut_bar_action_values">
+        <item>alt_f4</item>
+        <item>win_d</item>
+        <item>win</item>
+        <item>win_tab</item>
+        <item>alt_tab</item>
+        <item>escape</item>
+        <item>task_mgr</item>
+        <item>cad</item>
+        <item>copy</item>
+        <item>paste</item>
+        <item>undo</item>
+        <item>save</item>
+        <item>select_all</item>
+        <item>explorer</item>
+        <item>lock</item>
+        <item>back</item>
+        <item>forward</item>
+    </string-array>
+
+    <string-array name="shortcut_bar_default_values">
+        <item>alt_f4</item>
+        <item>win_d</item>
+        <item>win</item>
+        <item>win_tab</item>
+    </string-array>
+
+
     <string-array name="quick_bar_action_labels">
         <item>System Keyboard</item>
         <item>Pan/Zoom Mode</item>
         <item>Performance HUD</item>
         <item>On-screen Controller</item>
         <item>Disconnect</item>
+        <item>Lock Keyboard</item>
     </string-array>
 
     <string-array name="quick_bar_action_values">
@@ -481,6 +548,7 @@
         <item>hud</item>
         <item>controller</item>
         <item>disconnect</item>
+        <item>lock_keyboard</item>
     </string-array>
 
     <string name="title_virtual_trackpad_settings">Virtual Trackpad Settings</string>

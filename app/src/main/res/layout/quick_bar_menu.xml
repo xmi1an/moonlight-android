@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Standalone popup menu for Quick Bar - shown via PopupWindow -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/quickBarMenuContainer"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/quick_bar_background"
+    android:padding="4dp"
+    android:elevation="10dp">
+
+    <ImageButton
+        android:id="@+id/quickBarKeyboard"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_android_keyboard"
+        android:scaleType="fitCenter"
+        android:padding="8dp"
+        android:contentDescription="@string/game_menu_toggle_keyboard" />
+
+    <ImageButton
+        android:id="@+id/quickBarZoom"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_zoom_toggle"
+        android:scaleType="fitCenter"
+        android:padding="8dp"
+        android:contentDescription="@string/game_menu_enable_zoom_mode" />
+
+    <ImageButton
+        android:id="@+id/quickBarHud"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_hud"
+        android:scaleType="fitCenter"
+        android:padding="8dp"
+        android:contentDescription="@string/game_menu_toggle_hud" />
+
+    <ImageButton
+        android:id="@+id/quickBarController"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_controller"
+        android:scaleType="fitCenter"
+        android:padding="8dp"
+        android:contentDescription="@string/game_menu_toggle_virtual_model" />
+
+    <ImageButton
+        android:id="@+id/quickBarDisconnect"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_disconnect"
+        android:scaleType="fitCenter"
+        android:padding="8dp"
+        android:contentDescription="@string/game_menu_disconnect" />
+
+    <ImageButton
+        android:id="@+id/quickBarLockKeyboard"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_lock_keyboard"
+        android:scaleType="fitCenter"
+        android:padding="8dp"
+        android:contentDescription="@string/game_menu_keep_keyboard_open" />
+
+</LinearLayout>

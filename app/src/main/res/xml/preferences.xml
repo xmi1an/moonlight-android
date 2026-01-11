@@ -570,6 +570,14 @@
             android:summary="@string/summary_onscreen_keyboard_autofit"
             android:title="@string/title_onscreen_keyboard_autofit"
             app:iconSpaceReserved="false" />
+        <MultiSelectListPreference
+            android:key="shortcut_bar_actions"
+            android:title="@string/title_shortcut_bar_actions"
+            android:summary="@string/summary_shortcut_bar_actions"
+            android:entries="@array/shortcut_bar_action_labels"
+            android:entryValues="@array/shortcut_bar_action_values"
+            android:defaultValue="@array/shortcut_bar_default_values"
+            app:iconSpaceReserved="false" />
         <com.limelight.preferences.SeekBarPreference
             android:defaultValue="200"
             android:dependency="onscreen_keyboard_autofit"
@@ -621,6 +629,7 @@
             app:iconSpaceReserved="false" />
         <MultiSelectListPreference
             android:key="quick_bar_actions"
+            android:defaultValue="@array/quick_bar_action_values"
             android:entries="@array/quick_bar_action_labels"
             android:entryValues="@array/quick_bar_action_values"
             android:summary="@string/summary_quick_bar_actions"

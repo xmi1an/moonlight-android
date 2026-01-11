@@ -126,6 +126,13 @@ public class GameMenu implements Game.GameMenuCallbacks {
 
         builder.setOnCancelListener(dialog -> hideMenu());
 
+        // Re-show keyboard on dialog dismiss if lock keyboard is enabled
+        builder.setOnDismissListener(dialog -> {
+            if (game != null) {
+                game.restoreKeyboardIfLocked();
+            }
+        });
+
         if (currentDialog != null) {
             currentDialog.dismiss();
         }
@@ -258,6 +265,7 @@ public class GameMenu implements Game.GameMenuCallbacks {
             options.add(new MenuOption(getString(R.string.game_menu_toggle_virtual_model), true, game::toggleVirtualController));
         }
         options.add(new MenuOption(getString(R.string.game_menu_toggle_virtual_keyboard_model), true, game::toggleFullKeyboard));
+        options.add(new MenuOption(getString(R.string.game_menu_toggle_shortcut_bar), true, game::toggleShortcutBar));
         options.add(new MenuOption(getString(R.string.game_menu_task_manager), true, () -> sendKeys(new short[]{KeyboardTranslator.VK_LCONTROL, KeyboardTranslator.VK_LSHIFT, KeyboardTranslator.VK_ESCAPE})));
 
         // **FIXED:** This is a UI navigation action, so it should not use withGameFocus.

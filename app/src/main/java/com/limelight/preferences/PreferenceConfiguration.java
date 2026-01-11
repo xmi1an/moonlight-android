@@ -217,7 +217,7 @@ public class PreferenceConfiguration {
     private static final boolean DEFAULT_SHOW_OVERLAY_TOGGLE_BUTTON = false;
     private static final boolean DEFAULT_ENABLE_FLOATING_KEYBOARD_BUTTON = false;
     private static final boolean DEFAULT_ENABLE_QUICK_BAR = false;
-    private static final Set<String> DEFAULT_QUICK_BAR_ACTIONS = new HashSet<>(Arrays.asList("keyboard", "zoom", "hud", "controller", "disconnect"));
+    private static final Set<String> DEFAULT_QUICK_BAR_ACTIONS = new HashSet<>(Arrays.asList("keyboard", "zoom", "hud", "controller", "disconnect", "lock_keyboard"));
 
     private static final boolean DEFAULT_REMEMBER_ZOOM_PAN = false;
     private static final float DEFAULT_ZOOM_SCALE = 1.0f;

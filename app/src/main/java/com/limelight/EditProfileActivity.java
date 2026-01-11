@@ -382,7 +382,13 @@ public class EditProfileActivity extends AppCompatActivity {
         @Override
         public java.util.Set<String> getStringSet(String key, java.util.Set<String> defValues) {
             Object value = values.get(key);
-            return value instanceof java.util.Set ? (java.util.Set<String>) value : defValues;
+            if (value instanceof java.util.Set) {
+                return (java.util.Set<String>) value;
+            } else if (value instanceof java.util.List) {
+                // Gson deserializes JSON arrays as ArrayList, convert to HashSet
+                return new java.util.HashSet<>((java.util.List<String>) value);
+            }
+            return defValues;
         }
 
         @Override

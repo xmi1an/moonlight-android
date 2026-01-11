@@ -317,14 +317,16 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
     private boolean isKeyboardButtonMoving = false;
     private float keyboardButtonStartX, keyboardButtonStartY;
 
-    // Quick Bar
-    private View quickBarContainer;
-    private View quickBarExpanded;
+    // Quick Bar (FAB with popup menu)
     private ImageButton quickBarToggle;
-    private boolean isQuickBarExpanded = false;
+    private com.limelight.ui.QuickBarMenu quickBarMenu;
+    private boolean isQuickBarMenuOpen = false;
     private float quickBarDX, quickBarDY;
     private boolean isQuickBarMoving = false;
     private float quickBarStartX, quickBarStartY;
+
+    // Circular Quick Bar for keyboard shortcuts
+    private com.limelight.ui.CircularQuickBar circularQuickBar;
 
     // Floating full keyboard button
     private ImageButton floatingFullKeyboardButton;
@@ -919,6 +921,9 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
         // Initialize Quick Bar
         setupQuickBar();
 
+        // Initialize Circular Quick Bar for keyboard shortcuts
+        setupCircularQuickBar();
+
         //fixed size + pacing without back-pressure on MTK
         try {
             View root = findViewById(android.R.id.content);
@@ -1043,8 +1048,10 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
     @SuppressLint("ClickableViewAccessibility")
     private void setupFloatingKeyboardButton() {
         if (floatingKeyboardButton != null) {
-            // Always start hidden - can be toggled from Quick Menu
-            floatingKeyboardButton.setVisibility(View.GONE);
+            // Restore visibility from saved preferences
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            boolean wasVisible = prefs.getBoolean("floating_keyboard_button_visible", false);
+            floatingKeyboardButton.setVisibility(wasVisible ? View.VISIBLE : View.GONE);
 
             // Always set up touch listener for drag and click
             floatingKeyboardButton.setOnTouchListener((view, event) -> {
@@ -1100,8 +1107,10 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
     @SuppressLint("ClickableViewAccessibility")
     private void setupFloatingFullKeyboardButton() {
         if (floatingFullKeyboardButton != null) {
-            // Always start hidden - can be toggled from Quick Menu
-            floatingFullKeyboardButton.setVisibility(View.GONE);
+            // Restore visibility from saved preferences
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            boolean wasVisible = prefs.getBoolean("floating_full_keyboard_button_visible", false);
+            floatingFullKeyboardButton.setVisibility(wasVisible ? View.VISIBLE : View.GONE);
 
             // Always set up touch listener for drag and click
             floatingFullKeyboardButton.setOnTouchListener((view, event) -> {
@@ -1156,159 +1165,184 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
 
     @SuppressLint("ClickableViewAccessibility")
     private void setupQuickBar() {
-        quickBarContainer = findViewById(R.id.quickBarContainer);
-        quickBarExpanded = findViewById(R.id.quickBarExpanded);
+        // Quick Bar is now just the FAB toggle button
         quickBarToggle = findViewById(R.id.quickBarToggle);
 
-        if (quickBarContainer == null || quickBarToggle == null) {
+        if (quickBarToggle == null) {
             return;
         }
 
-        // Always start hidden - can be toggled from Quick Menu
-        quickBarContainer.setVisibility(View.GONE);
+        // Restore visibility from saved preferences
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean wasVisible = prefs.getBoolean("quick_bar_visible", false);
+        quickBarToggle.setVisibility(wasVisible ? View.VISIBLE : View.GONE);
 
-        // Set up action buttons - show only user-selected ones from settings
-        ImageButton keyboardBtn = findViewById(R.id.quickBarKeyboard);
-        ImageButton zoomBtn = findViewById(R.id.quickBarZoom);
-        ImageButton hudBtn = findViewById(R.id.quickBarHud);
-        ImageButton controllerBtn = findViewById(R.id.quickBarController);
-        ImageButton disconnectBtn = findViewById(R.id.quickBarDisconnect);
+        // Restore saved position using translationX/Y
+        float savedX = prefs.getFloat("quick_bar_x", -1);
+        float savedY = prefs.getFloat("quick_bar_y", -1);
+        if (savedX >= 0 && savedY >= 0) {
+            quickBarToggle.setTranslationX(savedX);
+            quickBarToggle.setTranslationY(savedY);
+        }
 
-        Set<String> selectedActions = prefConfig.quickBarActions;
-
-        if (keyboardBtn != null) {
-            if (selectedActions != null && selectedActions.contains("keyboard")) {
-                keyboardBtn.setVisibility(View.VISIBLE);
-                keyboardBtn.setOnClickListener(v -> {
+        // Create the popup menu
+        quickBarMenu = new com.limelight.ui.QuickBarMenu(this, new com.limelight.ui.QuickBarMenu.MenuCallbacks() {
+            @Override
+            public void onKeyboardToggle() {
+                // Ensure streamContainer has focus, then toggle system soft keyboard
+                if (streamContainer != null) {
+                    streamContainer.requestFocus();
+                    streamContainer.postDelayed(() -> toggleKeyboard(), 100);
+                } else {
                     toggleKeyboard();
-                    collapseQuickBar();
-                });
-            } else {
-                keyboardBtn.setVisibility(View.GONE);
+                }
             }
-        }
 
-        if (zoomBtn != null) {
-            if (selectedActions != null && selectedActions.contains("zoom")) {
-                zoomBtn.setVisibility(View.VISIBLE);
-                zoomBtn.setOnClickListener(v -> {
-                    toggleZoomMode();
-                    collapseQuickBar();
-                });
-            } else {
-                zoomBtn.setVisibility(View.GONE);
+            @Override
+            public void onZoomToggle() {
+                toggleZoomMode();
             }
-        }
 
-        if (hudBtn != null) {
-            if (selectedActions != null && selectedActions.contains("hud")) {
-                hudBtn.setVisibility(View.VISIBLE);
-                hudBtn.setOnClickListener(v -> {
-                    toggleHUD();
-                    collapseQuickBar();
-                });
-            } else {
-                hudBtn.setVisibility(View.GONE);
+            @Override
+            public void onHudToggle() {
+                toggleHUD();
             }
-        }
 
-        if (controllerBtn != null) {
-            if (selectedActions != null && selectedActions.contains("controller")) {
-                controllerBtn.setVisibility(View.VISIBLE);
-                controllerBtn.setOnClickListener(v -> {
-                    toggleVirtualController();
-                    collapseQuickBar();
-                });
-            } else {
-                controllerBtn.setVisibility(View.GONE);
+            @Override
+            public void onControllerToggle() {
+                toggleVirtualController();
             }
-        }
 
-        if (disconnectBtn != null) {
-            if (selectedActions != null && selectedActions.contains("disconnect")) {
-                disconnectBtn.setVisibility(View.VISIBLE);
-                disconnectBtn.setOnClickListener(v -> {
-                    collapseQuickBar();
-                    disconnect();
-                });
-            } else {
-                disconnectBtn.setVisibility(View.GONE);
+            @Override
+            public void onDisconnect() {
+                disconnect();
             }
-        }
 
-        // Toggle button - expand/collapse and drag
+            @Override
+            public void onLockKeyboardToggle() {
+                toggleKeepKeyboardOpen();
+            }
+
+            @Override
+            public boolean isLockKeyboardEnabled() {
+                return streamContainer != null && streamContainer.isKeepKeyboardOpen();
+            }
+        });
+
+        // Touch listener for drag vs click
         quickBarToggle.setOnTouchListener((view, event) -> {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     quickBarStartX = event.getRawX();
                     quickBarStartY = event.getRawY();
-                    quickBarDX = quickBarContainer.getX() - event.getRawX();
-                    quickBarDY = quickBarContainer.getY() - event.getRawY();
+                    // Store offset from current translation to touch point
+                    quickBarDX = quickBarToggle.getTranslationX() - event.getRawX();
+                    quickBarDY = quickBarToggle.getTranslationY() - event.getRawY();
                     isQuickBarMoving = false;
                     return true;
-                case MotionEvent.ACTION_MOVE:
-                    float newX = event.getRawX() + quickBarDX;
-                    float newY = event.getRawY() + quickBarDY;
 
+                case MotionEvent.ACTION_MOVE:
+                    // Check if we've exceeded drag threshold
                     if (Math.abs(event.getRawX() - quickBarStartX) > CLICK_ACTION_THRESHOLD ||
                             Math.abs(event.getRawY() - quickBarStartY) > CLICK_ACTION_THRESHOLD) {
                         isQuickBarMoving = true;
                     }
 
-                    // Keep within bounds
-                    if (newX < 0) newX = 0;
-                    if (newY < 0) newY = 0;
+                    // Only update position if we're actually dragging
+                    if (isQuickBarMoving) {
+                        float newX = event.getRawX() + quickBarDX;
+                        float newY = event.getRawY() + quickBarDY;
 
-                    int maxOffsetX = getWindow().getDecorView().getWidth() - quickBarContainer.getWidth();
-                    if (newX > maxOffsetX) newX = maxOffsetX;
+                        // Get screen bounds
+                        View decorView = getWindow().getDecorView();
+                        int maxX = decorView.getWidth() - quickBarToggle.getWidth();
+                        int maxY = decorView.getHeight() - quickBarToggle.getHeight();
 
-                    int maxOffsetY = getWindow().getDecorView().getHeight() - quickBarContainer.getHeight();
-                    if (newY > maxOffsetY) newY = maxOffsetY;
+                        // Clamp to screen bounds
+                        newX = Math.max(0, Math.min(newX, maxX));
+                        newY = Math.max(0, Math.min(newY, maxY));
 
-                    quickBarContainer.setX(newX);
-                    quickBarContainer.setY(newY);
+                        quickBarToggle.setTranslationX(newX);
+                        quickBarToggle.setTranslationY(newY);
+                    }
                     return true;
+
                 case MotionEvent.ACTION_UP:
                     if (!isQuickBarMoving) {
-                        toggleQuickBarExpanded();
+                        // Click - toggle menu using our own flag
+                        if (isQuickBarMenuOpen) {
+                            quickBarMenu.dismiss();
+                            isQuickBarMenuOpen = false;
+                            // Return to idle state: rotate back and lower opacity
+                            quickBarToggle.animate().rotation(0).alpha(0.4f).setDuration(200).start();
+                            // Restore keyboard if locked
+                            restoreKeyboardIfLocked();
+                        } else if (quickBarMenu != null) {
+                            // Active state: rotate and full opacity
+                            quickBarToggle.animate().rotation(45).alpha(1.0f).setDuration(200).start();
+                            quickBarMenu.show(quickBarToggle);
+                            isQuickBarMenuOpen = true;
+                            // Restore keyboard if locked (popup might have affected it)
+                            restoreKeyboardIfLocked();
+                            quickBarMenu.setOnDismissListener(() -> {
+                                isQuickBarMenuOpen = false;
+                                // Return to idle state
+                                quickBarToggle.animate().rotation(0).alpha(0.4f).setDuration(200).start();
+                                // Restore keyboard if locked
+                                restoreKeyboardIfLocked();
+                            });
+                        }
+                    } else {
+                        // Drag ended - save position
+                        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(Game.this).edit();
+                        editor.putFloat("quick_bar_x", quickBarToggle.getTranslationX());
+                        editor.putFloat("quick_bar_y", quickBarToggle.getTranslationY());
+                        editor.apply();
                     }
                     isQuickBarMoving = false;
                     return true;
+
                 default:
                     return false;
             }
         });
     }
 
-    private void toggleQuickBarExpanded() {
-        if (quickBarExpanded == null) return;
+    private void setupCircularQuickBar() {
+        // Initialize the circular quick bar with shortcut sending callback
+        circularQuickBar = new com.limelight.ui.CircularQuickBar(
+            getWindow().getDecorView(),
+            this,
+            keys -> {
+                // Send the key combination to the remote host
+                sendShortcutKeys(keys);
+            }
+        );
 
-        isQuickBarExpanded = !isQuickBarExpanded;
-        quickBarExpanded.setVisibility(isQuickBarExpanded ? View.VISIBLE : View.GONE);
-
-        // Animate the toggle button rotation
-        if (quickBarToggle != null) {
-            quickBarToggle.animate()
-                    .rotation(isQuickBarExpanded ? 45 : 0)
-                    .setDuration(200)
-                    .start();
+        // Restore visibility from saved preferences
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean wasVisible = prefs.getBoolean("circular_quickbar_visible", true);
+        if (wasVisible) {
+            circularQuickBar.show();
+        } else {
+            circularQuickBar.hide();
         }
     }
 
-    private void collapseQuickBar() {
-        if (isQuickBarExpanded) {
-            isQuickBarExpanded = false;
-            if (quickBarExpanded != null) {
-                quickBarExpanded.setVisibility(View.GONE);
-            }
-            if (quickBarToggle != null) {
-                quickBarToggle.animate()
-                        .rotation(0)
-                        .setDuration(200)
-                        .start();
-            }
+    private void sendShortcutKeys(short[] keys) {
+        // Send key down events for all keys
+        for (short key : keys) {
+            conn.sendKeyboardInput(key, KeyboardPacket.KEY_DOWN, (byte) 0, (byte) 0);
         }
+
+        // Small delay then send key up events in reverse order
+        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+            for (int i = keys.length - 1; i >= 0; i--) {
+                conn.sendKeyboardInput(keys[i], KeyboardPacket.KEY_UP, (byte) 0, (byte) 0);
+            }
+        }, 100);
     }
+
 
     private void listenForExternalDisplayRemoval() {
         DisplayManager displayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
@@ -2032,6 +2066,25 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                     .putFloat("number_pan_offset_x", panZoomHandler.getChildX())
                     .putFloat("number_pan_offset_y", panZoomHandler.getChildY())
                     .apply();
+        }
+
+        // Save floating button visibility states
+        if (prefConfig != null) {
+            SharedPreferences basePrefs = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = basePrefs.edit();
+            if (floatingKeyboardButton != null) {
+                editor.putBoolean("floating_keyboard_button_visible", floatingKeyboardButton.getVisibility() == View.VISIBLE);
+            }
+            if (floatingFullKeyboardButton != null) {
+                editor.putBoolean("floating_full_keyboard_button_visible", floatingFullKeyboardButton.getVisibility() == View.VISIBLE);
+            }
+            if (quickBarToggle != null) {
+                editor.putBoolean("quick_bar_visible", quickBarToggle.getVisibility() == View.VISIBLE);
+            }
+            if (circularQuickBar != null) {
+                editor.putBoolean("circular_quickbar_visible", circularQuickBar.isVisible());
+            }
+            editor.apply();
         }
 
         if (connectedToUsbDriverService) {
@@ -2811,12 +2864,31 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
             normalizedX=normalized[0];
             normalizedY=normalized[1];
         }
+
+        // Get the actual SurfaceView that PanZoomHandler transforms
+        View surfaceView = streamContainer.getSurfaceView();
+
         // For the containing background view, we must subtract the origin
         // of the StreamView to get video-relative coordinates.
         if (view != streamContainer) {
             float[] normalized = getNormalizedCoordinates(streamContainer, normalizedX, normalizedY);
             normalizedX = normalized[0];
             normalizedY = normalized[1];
+        }
+
+        // Always adjust for the SurfaceView's pan offset and scale when it has been repositioned
+        if (surfaceView != null) {
+            float scaleX = surfaceView.getScaleX();
+            float scaleY = surfaceView.getScaleY();
+            float offsetX = surfaceView.getX();
+            float offsetY = surfaceView.getY();
+
+            // Only adjust if stream has been moved or scaled
+            if (offsetX != 0 || offsetY != 0 || scaleX != 1.0f || scaleY != 1.0f) {
+                // Transform touch coordinates to stream-relative coordinates
+                normalizedX = (normalizedX - offsetX) / scaleX;
+                normalizedY = (normalizedY - offsetY) / scaleY;
+            }
         }
 
         normalizedX = Math.max(normalizedX, 0.0f);
@@ -4558,6 +4630,17 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
         if (gameMenuCallbacks != null) {
             gameMenuCallbacks.hideMenu();
         }
+        // Re-show keyboard if lock keyboard is enabled
+        if (streamContainer != null && streamContainer.isKeepKeyboardOpen()) {
+            streamContainer.postDelayed(() -> {
+                android.view.inputmethod.InputMethodManager imm =
+                    (android.view.inputmethod.InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                if (imm != null && streamContainer.isKeepKeyboardOpen()) {
+                    streamContainer.requestFocus();
+                    imm.showSoftInput(streamContainer, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);
+                }
+            }, 100);
+        }
     }
 
     private void updateFloatingButtonVisibility(boolean show) {
@@ -4570,6 +4653,19 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
         }
     }
 
+    public void restoreKeyboardIfLocked() {
+        if (streamContainer != null && streamContainer.isKeepKeyboardOpen()) {
+            streamContainer.postDelayed(() -> {
+                android.view.inputmethod.InputMethodManager imm =
+                    (android.view.inputmethod.InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                if (imm != null && streamContainer.isKeepKeyboardOpen()) {
+                    streamContainer.requestFocus();
+                    imm.showSoftInput(streamContainer, android.view.inputmethod.InputMethodManager.SHOW_FORCED);
+                }
+            }, 200);
+        }
+    }
+
     public void toggleFloatingKeyboardButtonVisibility() {
         if (floatingKeyboardButton != null) {
             boolean isVisible = floatingKeyboardButton.getVisibility() == View.VISIBLE;
@@ -4577,14 +4673,19 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
         }
     }
 
+
     public void toggleQuickBarVisibility() {
-        if (quickBarContainer != null) {
-            boolean isVisible = quickBarContainer.getVisibility() == View.VISIBLE;
-            quickBarContainer.setVisibility(isVisible ? View.GONE : View.VISIBLE);
-            // Collapse when hiding
-            if (isVisible) {
-                collapseQuickBar();
+        if (quickBarToggle != null) {
+            boolean isVisible = quickBarToggle.getVisibility() == View.VISIBLE;
+            quickBarToggle.setVisibility(isVisible ? View.GONE : View.VISIBLE);
+            // Dismiss menu when hiding
+            if (isVisible && quickBarMenu != null) {
+                quickBarMenu.dismiss();
             }
+            // Save visibility preference
+            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+            editor.putBoolean("quick_bar_visible", !isVisible);
+            editor.apply();
         }
     }
 
@@ -4595,6 +4696,40 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
         }
     }
 
+    public void toggleKeepKeyboardOpen() {
+        if (streamContainer != null) {
+            boolean currentState = streamContainer.isKeepKeyboardOpen();
+            streamContainer.setKeepKeyboardOpen(!currentState);
+        }
+    }
+
+    public boolean isKeepKeyboardOpen() {
+        if (streamContainer != null) {
+            return streamContainer.isKeepKeyboardOpen();
+        }
+        return false;
+    }
+
+    private void updateLockKeyboardIcon(ImageButton button) {
+        if (button != null) {
+            // Change icon or tint based on state
+            if (isKeepKeyboardOpen()) {
+                button.setColorFilter(getResources().getColor(android.R.color.holo_green_light));
+            } else {
+                button.setColorFilter(getResources().getColor(android.R.color.white));
+            }
+        }
+    }
+
+    public void toggleShortcutBar() {
+        if (circularQuickBar != null) {
+            if (circularQuickBar.isVisible()) {
+                circularQuickBar.hide();
+            } else {
+                circularQuickBar.show();
+            }
+        }
+    }
 
     // 设置surfaceView的圆角 setSurfaceviewCorner(UiHelper.dpToPx(this,24));
     private void setSurfaceviewCorner(final float radius) {

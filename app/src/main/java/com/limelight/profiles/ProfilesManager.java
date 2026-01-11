@@ -242,7 +242,16 @@ public class ProfilesManager {
             return base.getBoolean(key, defValue);
         }
         @Override public Set<String> getStringSet(String key, Set<String> defValues) {
-            if (patch.containsKey(key)) return (Set<String>) patch.get(key);
+            if (patch.containsKey(key)) {
+                Object value = patch.get(key);
+                if (value instanceof Set) {
+                    return (Set<String>) value;
+                } else if (value instanceof java.util.List) {
+                    // Gson deserializes JSON arrays as ArrayList, convert to HashSet
+                    return new java.util.HashSet<>((java.util.List<String>) value);
+                }
+                return defValues;
+            }
             return base.getStringSet(key, defValues);
         }
         @Override public boolean contains(String key) {

@@ -147,5 +147,9 @@
     <!-- Quick Bar -->
     <include layout="@layout/quick_bar" />
 
+    <!-- Circular Quick Bar for Keyboard Shortcuts -->
+    <include layout="@layout/circular_quickbar" />
+
 </merge>
+
 

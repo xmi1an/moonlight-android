@@ -54,23 +54,29 @@ public class PanZoomHandler {
     private void constrainToBounds() {
         updateDimensions();
 
-        if (parentWidth >= childWidth) {
-            childX = (parentWidth - childWidth) / 2;
-        } else {
-            float boundaryX = parentWidth - childWidth;
-            childX = Math.max(boundaryX, Math.min(childX, 0));
-        }
+        // Keep at least 50% of the stream visible on screen
+        float halfChildWidth = childWidth * 0.5f;
+        float halfChildHeight = childHeight * 0.5f;
 
-        if (parentHeight >= childHeight) {
-            if (isTopMode) {
-                childY = 0;
-            } else {
-                childY = (parentHeight - childHeight) / 2;
-            }
-        } else {
-            float boundaryY = parentHeight - childHeight;
-            childY = Math.max(boundaryY, Math.min(childY, 0));
+        // X constraint: keep at least half the stream visible
+        float minX = halfChildWidth - childWidth;  // Left edge can go off-screen by half
+        float maxX = parentWidth - halfChildWidth; // Right edge can go off-screen by half
+        if (childWidth > parentWidth) {
+            // If zoomed in larger than screen, allow panning within content
+            minX = parentWidth - childWidth;
+            maxX = 0;
         }
+        childX = Math.max(minX, Math.min(childX, maxX));
+
+        // Y constraint: keep at least half the stream visible
+        float minY = halfChildHeight - childHeight; // Top edge can go off-screen by half
+        float maxY = parentHeight - halfChildHeight; // Bottom edge can go off-screen by half
+        if (childHeight > parentHeight) {
+            // If zoomed in larger than screen, allow panning within content
+            minY = parentHeight - childHeight;
+            maxY = 0;
+        }
+        childY = Math.max(minY, Math.min(childY, maxY));
 
         streamView.setX(childX);
         streamView.setY(childY);
