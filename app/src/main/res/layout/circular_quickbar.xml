@@ -5,136 +5,127 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="bottom|center_horizontal"
-    android:layout_marginBottom="8dp"
+    android:layout_marginBottom="12dp"
     android:orientation="horizontal"
-    android:background="@drawable/shortcut_bar_background"
+    android:background="@drawable/shortcut_bar_modern_bg"
     android:paddingStart="4dp"
-    android:paddingEnd="2dp"
+    android:paddingEnd="4dp"
     android:paddingTop="2dp"
     android:paddingBottom="2dp"
+    android:gravity="center"
     android:visibility="gone"
+    android:alpha="0.4"
     android:elevation="9999dp">
 
-    <!-- Up to 10 Shortcut buttons (dynamic visibility) - compact height -->
+    <!-- Up to 10 Shortcut buttons (dynamic visibility) - smaller size -->
     <ImageButton
         android:id="@+id/shortcut0"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
         android:layout_margin="1dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:background="@drawable/shortcut_button_selector"
         android:scaleType="centerInside"
-        android:padding="6dp"
+        android:padding="4dp"
         android:visibility="gone"
         android:contentDescription="Shortcut" />
 
     <ImageButton
         android:id="@+id/shortcut1"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
         android:layout_margin="1dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:background="@drawable/shortcut_button_selector"
         android:scaleType="centerInside"
-        android:padding="6dp"
+        android:padding="4dp"
         android:visibility="gone"
         android:contentDescription="Shortcut" />
 
     <ImageButton
         android:id="@+id/shortcut2"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
         android:layout_margin="1dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:background="@drawable/shortcut_button_selector"
         android:scaleType="centerInside"
-        android:padding="6dp"
+        android:padding="4dp"
         android:visibility="gone"
         android:contentDescription="Shortcut" />
 
     <ImageButton
         android:id="@+id/shortcut3"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
         android:layout_margin="1dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:background="@drawable/shortcut_button_selector"
         android:scaleType="centerInside"
-        android:padding="6dp"
+        android:padding="4dp"
         android:visibility="gone"
         android:contentDescription="Shortcut" />
 
     <ImageButton
         android:id="@+id/shortcut4"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
         android:layout_margin="1dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:background="@drawable/shortcut_button_selector"
         android:scaleType="centerInside"
-        android:padding="6dp"
+        android:padding="4dp"
         android:visibility="gone"
         android:contentDescription="Shortcut" />
 
     <ImageButton
         android:id="@+id/shortcut5"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
         android:layout_margin="1dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:background="@drawable/shortcut_button_selector"
         android:scaleType="centerInside"
-        android:padding="6dp"
+        android:padding="4dp"
         android:visibility="gone"
         android:contentDescription="Shortcut" />
 
     <ImageButton
         android:id="@+id/shortcut6"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
         android:layout_margin="1dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:background="@drawable/shortcut_button_selector"
         android:scaleType="centerInside"
-        android:padding="6dp"
+        android:padding="4dp"
         android:visibility="gone"
         android:contentDescription="Shortcut" />
 
     <ImageButton
         android:id="@+id/shortcut7"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
         android:layout_margin="1dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:background="@drawable/shortcut_button_selector"
         android:scaleType="centerInside"
-        android:padding="6dp"
+        android:padding="4dp"
         android:visibility="gone"
         android:contentDescription="Shortcut" />
 
     <ImageButton
         android:id="@+id/shortcut8"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
         android:layout_margin="1dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:background="@drawable/shortcut_button_selector"
         android:scaleType="centerInside"
-        android:padding="6dp"
+        android:padding="4dp"
         android:visibility="gone"
         android:contentDescription="Shortcut" />
 
     <ImageButton
         android:id="@+id/shortcut9"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
         android:layout_margin="1dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:background="@drawable/shortcut_button_selector"
         android:scaleType="centerInside"
-        android:padding="6dp"
+        android:padding="4dp"
         android:visibility="gone"
         android:contentDescription="Shortcut" />
-
-    <!-- Compact drag handle - just two vertical lines -->
-    <ImageView
-        android:id="@+id/shortcutBarDragHandle"
-        android:layout_width="12dp"
-        android:layout_height="32dp"
-        android:layout_marginStart="2dp"
-        android:src="@drawable/ic_drag_handle"
-        android:scaleType="centerInside"
-        android:alpha="0.5"
-        android:contentDescription="Drag to move" />
 
 </LinearLayout>

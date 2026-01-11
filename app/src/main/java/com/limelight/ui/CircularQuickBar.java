@@ -61,6 +61,14 @@ public class CircularQuickBar {
             new short[]{KeyboardTranslator.VK_LMENU, KeyboardTranslator.VK_F4}
         ));
 
+        // Close tab
+        shortcuts.put("ctrl_w", new Shortcut(
+            "ctrl_w",
+            context.getString(R.string.shortcut_ctrl_w),
+            R.drawable.ic_shortcut_close_tab,
+            new short[]{KeyboardTranslator.VK_LCONTROL, (short)87} // VK_W = 87
+        ));
+
         // Show desktop
         shortcuts.put("win_d", new Shortcut(
             "win_d",
@@ -201,7 +209,7 @@ public class CircularQuickBar {
         List<Shortcut> selected = new ArrayList<>();
 
         // Maintain order
-        String[] order = {"alt_f4", "win_d", "win", "win_tab", "alt_tab", "escape", "task_mgr", "cad",
+        String[] order = {"alt_f4", "ctrl_w", "win_d", "win", "win_tab", "alt_tab", "escape", "task_mgr", "cad",
                           "copy", "paste", "undo", "save", "select_all", "explorer", "lock", "back", "forward"};
         for (String id : order) {
             if (selectedIds.contains(id) && allShortcuts.containsKey(id)) {
@@ -227,7 +235,6 @@ public class CircularQuickBar {
 
     private final Context context;
     private final View container;
-    private final ImageView dragHandle;
     private final ImageButton[] shortcutButtons = new ImageButton[10];
     private final int[] shortcutButtonIds = {
         R.id.shortcut0, R.id.shortcut1, R.id.shortcut2, R.id.shortcut3,
@@ -248,7 +255,6 @@ public class CircularQuickBar {
         this.shortcuts = getSelectedShortcuts(context);
 
         container = rootView.findViewById(R.id.circularQuickBarContainer);
-        dragHandle = rootView.findViewById(R.id.shortcutBarDragHandle);
 
         // Initialize shortcut buttons
         for (int i = 0; i < shortcutButtonIds.length; i++) {
@@ -261,38 +267,6 @@ public class CircularQuickBar {
 
         // Restore saved position
         restorePosition();
-
-        // Set up drag handle for repositioning
-        if (dragHandle != null) {
-            dragHandle.setOnTouchListener((view, event) -> {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        dX = container.getX() - event.getRawX();
-                        dY = container.getY() - event.getRawY();
-                        return true;
-
-                    case MotionEvent.ACTION_MOVE:
-                        float newX = event.getRawX() + dX;
-                        float newY = event.getRawY() + dY;
-
-                        // Keep within screen bounds
-                        ViewGroup parent = (ViewGroup) container.getParent();
-                        if (parent != null) {
-                            newX = Math.max(0, Math.min(newX, parent.getWidth() - container.getWidth()));
-                            newY = Math.max(0, Math.min(newY, parent.getHeight() - container.getHeight()));
-                        }
-                        container.setX(newX);
-                        container.setY(newY);
-                        return true;
-
-                    case MotionEvent.ACTION_UP:
-                        // Save position when drag ends
-                        savePosition();
-                        return true;
-                }
-                return false;
-            });
-        }
 
         // Set up shortcuts
         setupShortcuts();
@@ -325,6 +299,10 @@ public class CircularQuickBar {
         }
     }
 
+    private boolean isDraggingShortcut = false;
+    private static final int LONG_PRESS_TIMEOUT = 300; // ms
+
+    @SuppressLint("ClickableViewAccessibility")
     private void setupShortcuts() {
         for (int i = 0; i < shortcutButtons.length; i++) {
             ImageButton btn = shortcutButtons[i];
@@ -335,17 +313,85 @@ public class CircularQuickBar {
                 btn.setImageResource(shortcut.iconResId);
                 btn.setContentDescription(shortcut.label);
                 btn.setVisibility(View.VISIBLE);
-                // White tint for native look
                 btn.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
 
                 final int index = i;
-                btn.setOnClickListener(v -> {
-                    if (listener != null && index < shortcuts.size()) {
-                        listener.onShortcutPressed(shortcuts.get(index).keys);
+                final android.os.Handler handler = new android.os.Handler(android.os.Looper.getMainLooper());
+                final Runnable longPressRunnable = () -> {
+                    isDraggingShortcut = true;
+                    // Vibrate to signal drag mode
+                    android.os.Vibrator v = (android.os.Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+                    if (v != null) {
+                        v.vibrate(50);
+                    }
+                    container.animate().scaleX(1.1f).scaleY(1.1f).alpha(0.8f).setDuration(150).start();
+                };
+
+                btn.setOnTouchListener(new View.OnTouchListener() {
+                    private float startX, startY;
+                    private boolean moved = false;
+
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        switch (event.getAction()) {
+                            case MotionEvent.ACTION_DOWN:
+                                startX = event.getRawX();
+                                startY = event.getRawY();
+                                dX = container.getX() - event.getRawX();
+                                dY = container.getY() - event.getRawY();
+                                moved = false;
+                                isDraggingShortcut = false;
+                                handler.postDelayed(longPressRunnable, LONG_PRESS_TIMEOUT);
+                                v.setPressed(true);
+                                // Bring to full opacity when touched
+                                container.animate().alpha(1.0f).setDuration(150).start();
+                                return true;
+
+                            case MotionEvent.ACTION_MOVE:
+                                if (!isDraggingShortcut) {
+                                    if (Math.abs(event.getRawX() - startX) > 10 || Math.abs(event.getRawY() - startY) > 10) {
+                                        moved = true;
+                                        handler.removeCallbacks(longPressRunnable);
+                                    }
+                                } else {
+                                    float newX = event.getRawX() + dX;
+                                    float newY = event.getRawY() + dY;
+                                    ViewGroup parent = (ViewGroup) container.getParent();
+                                    if (parent != null) {
+                                        newX = Math.max(0, Math.min(newX, parent.getWidth() - container.getWidth()));
+                                        newY = Math.max(0, Math.min(newY, parent.getHeight() - container.getHeight()));
+                                    }
+                                    container.setX(newX);
+                                    container.setY(newY);
+                                }
+                                return true;
+
+                            case MotionEvent.ACTION_UP:
+                            case MotionEvent.ACTION_CANCEL:
+                                handler.removeCallbacks(longPressRunnable);
+                                v.setPressed(false);
+                                if (isDraggingShortcut) {
+                                    container.animate().scaleX(1.0f).scaleY(1.0f).alpha(0.4f).setDuration(200).start();
+                                    savePosition();
+                                } else if (!moved && event.getAction() == MotionEvent.ACTION_UP) {
+                                    if (listener != null) {
+                                        listener.onShortcutPressed(shortcuts.get(index).keys);
+                                    }
+                                    // Fade back to idle opacity after a click
+                                    container.animate().alpha(0.4f).setDuration(300).setStartDelay(500).start();
+                                } else {
+                                    // Fade back if it was just a touch or cancelled
+                                    container.animate().alpha(0.4f).setDuration(200).start();
+                                }
+                                isDraggingShortcut = false;
+                                return true;
+                        }
+                        return false;
                     }
                 });
             } else {
                 btn.setVisibility(View.GONE);
+                btn.setOnTouchListener(null);
             }
         }
     }

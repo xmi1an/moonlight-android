@@ -479,6 +479,7 @@
     <string name="shortcut_escape">Escape</string>
     <string name="shortcut_task_mgr">Task Manager</string>
     <string name="shortcut_win_tab">Win+Tab (Task View)</string>
+    <string name="shortcut_ctrl_w">Ctrl+W (Close Tab)</string>
     <string name="shortcut_cad">Ctrl+Alt+Del</string>
 
     <!-- Shortcut Bar Settings -->
@@ -487,6 +488,7 @@
 
     <string-array name="shortcut_bar_action_labels">
         <item>Alt+F4 (Close Window)</item>
+        <item>Ctrl+W (Close Tab)</item>
         <item>Win+D (Show Desktop)</item>
         <item>Windows Key</item>
         <item>Win+Tab (Task View)</item>
@@ -507,6 +509,7 @@
 
     <string-array name="shortcut_bar_action_values">
         <item>alt_f4</item>
+        <item>ctrl_w</item>
         <item>win_d</item>
         <item>win</item>
         <item>win_tab</item>
