@@ -325,8 +325,8 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
     private boolean isQuickBarMoving = false;
     private float quickBarStartX, quickBarStartY;
 
-    // Circular Quick Bar for keyboard shortcuts
-    private com.limelight.ui.CircularQuickBar circularQuickBar;
+    // Shortcut Bar for keyboard shortcuts
+    private com.limelight.ui.ShortcutBar shortcutBar;
 
     // Floating full keyboard button
     private ImageButton floatingFullKeyboardButton;
@@ -922,7 +922,7 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
         setupQuickBar();
 
         // Initialize Circular Quick Bar for keyboard shortcuts
-        setupCircularQuickBar();
+        setupShortcutBar();
 
         //fixed size + pacing without back-pressure on MTK
         try {
@@ -1336,9 +1336,9 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
         });
     }
 
-    private void setupCircularQuickBar() {
-        // Initialize the circular quick bar with shortcut sending callback
-        circularQuickBar = new com.limelight.ui.CircularQuickBar(
+    private void setupShortcutBar() {
+        // Initialize the shortcut bar with shortcut sending callback
+        shortcutBar = new com.limelight.ui.ShortcutBar(
             getWindow().getDecorView(),
             this,
             keys -> {
@@ -1349,11 +1349,11 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
 
         // Restore visibility from saved preferences
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean wasVisible = prefs.getBoolean("circular_quickbar_visible", true);
+        boolean wasVisible = prefs.getBoolean("shortcut_bar_visible", true);
         if (wasVisible) {
-            circularQuickBar.show();
+            shortcutBar.show();
         } else {
-            circularQuickBar.hide();
+            shortcutBar.hide();
         }
     }
 
@@ -2109,8 +2109,8 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
             if (quickBarToggle != null) {
                 editor.putBoolean("quick_bar_visible", quickBarToggle.getVisibility() == View.VISIBLE);
             }
-            if (circularQuickBar != null) {
-                editor.putBoolean("circular_quickbar_visible", circularQuickBar.isVisible());
+            if (shortcutBar != null) {
+                editor.putBoolean("shortcut_bar_visible", shortcutBar.isVisible());
             }
             editor.apply();
         }
@@ -4750,11 +4750,11 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
     }
 
     public void toggleShortcutBar() {
-        if (circularQuickBar != null) {
-            if (circularQuickBar.isVisible()) {
-                circularQuickBar.hide();
+        if (shortcutBar != null) {
+            if (shortcutBar.isVisible()) {
+                shortcutBar.hide();
             } else {
-                circularQuickBar.show();
+                shortcutBar.show();
             }
         }
     }

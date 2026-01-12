@@ -375,7 +375,6 @@
     <string name="game_menu_toggle_floating_full_keyboard_button">Toggle Floating Full Keyboard Button</string>
     <string name="game_menu_keep_keyboard_open">Keep Keyboard Open</string>
     <string name="game_menu_allow_keyboard_close">Allow Keyboard Close</string>
-    <string name="game_menu_toggle_shortcut_bar">Toggle Shortcut Bar</string>
     <string name="game_menu_select_mouse_mode">Select Mouse mode</string>
     <string name="game_menu_select_steam_mode">Select Stream mode</string>
     <string name="game_menu_enable_zoom_mode">Enable Pan/Zoom</string>
@@ -470,8 +469,8 @@
     <string name="title_quick_bar_actions">Quick Bar Actions</string>
     <string name="summary_quick_bar_actions">Select which buttons appear in the Quick Bar</string>
 
-    <!-- Circular Quick Bar -->
-    <string name="circular_quickbar_toggle">Keyboard Shortcuts</string>
+    <!-- Shortcut Bar -->
+    <string name="shortcut_bar_toggle">Keyboard Shortcuts</string>
     <string name="shortcut_alt_f4">Alt+F4 (Close)</string>
     <string name="shortcut_win_d">Win+D (Desktop)</string>
     <string name="shortcut_alt_tab">Alt+Tab (Switch)</string>
@@ -810,7 +809,7 @@
     <string name="profile_manager_new_profile_with">New Profile: %s</string>
     <string name="profile_manager_no_profiles_yet">No profiles yet</string>
     <string name="profile_manager_profiles_description">Profiles allow you to create and save different streaming configurations. Each profile stores its own settings which can be quickly switched between.</string>
-    <string name="profile_manager_tap_create_profile">Tap + to create your first profile</string>s
+    <string name="profile_manager_tap_create_profile">Tap + to create your first profile</string>
     <string name="profile_manager_choose_profile">Choose Profile</string>
     <string name="profile_manager_deactivated_profile">Deactivated profile</string>
     <string name="profile_manager_activated_profile">Activated profile \'%s\'</string>

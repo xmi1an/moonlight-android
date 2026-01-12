@@ -27,7 +27,7 @@ import java.util.Set;
  * Has a dedicated drag handle at the end for repositioning.
  * Shortcuts are customizable via settings. Position is remembered.
  */
-public class CircularQuickBar {
+public class ShortcutBar {
 
     private static final String PREF_POSITION_X = "shortcut_bar_pos_x";
     private static final String PREF_POSITION_Y = "shortcut_bar_pos_y";
@@ -249,12 +249,12 @@ public class CircularQuickBar {
     private float dX, dY;
 
     @SuppressLint("ClickableViewAccessibility")
-    public CircularQuickBar(View rootView, Context context, ShortcutListener listener) {
+    public ShortcutBar(View rootView, Context context, ShortcutListener listener) {
         this.context = context;
         this.listener = listener;
         this.shortcuts = getSelectedShortcuts(context);
 
-        container = rootView.findViewById(R.id.circularQuickBarContainer);
+        container = rootView.findViewById(R.id.shortcutBarContainer);
 
         // Initialize shortcut buttons
         for (int i = 0; i < shortcutButtonIds.length; i++) {
