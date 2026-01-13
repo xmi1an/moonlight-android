@@ -305,8 +305,6 @@
 
     <string name="title_show_overlay_zoom_toggle_button">Taste zum Umschalten des Zoom-Overlays anzeigen</string>
     <string name="summary_show_overlay_zoom_toggle_button">Zeigt eine verschiebbare Taste oben auf dem Bildschirm an, um den Schwenk-/Zoom-Modus umzuschalten.</string>
-    <string name="title_checkbox_remember_zoom_pan">Zoom &amp; Pan merken</string>
-    <string name="summary_checkbox_remember_zoom_pan">Speichert Zoom- und Schwenkposition zwischen Sitzungen.</string>
 
     <string name="title_edit_profile">Profil bearbeiten</string>
 

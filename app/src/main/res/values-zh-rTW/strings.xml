@@ -755,8 +755,6 @@
 
 	<string name="title_enable_commit_text">啟用 commit-text 輸入（滑動/語音）</string>
 	<string name="summary_enable_commit_text">將軟體鍵盤的多字元輸入（手勢輸入、建議字詞、語音聽寫）轉送到主機。可能會影響依賴逐鍵輸入的遊戲。</string>
-	<string name="title_checkbox_remember_zoom_pan">記住縮放與平移</string>
-	<string name="summary_checkbox_remember_zoom_pan">在工作階段之間儲存縮放與平移位置</string>
 	<string name="title_checkbox_enable_perf_overlay_bottom">將效能資訊移至底部</string>
 	<string name="summary_checkbox_enable_perf_overlay_bottom">在非原生解析度串流、同時啟用「置頂置中顯示」與精簡模式時特別有用。</string>
 

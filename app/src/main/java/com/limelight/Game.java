@@ -1010,8 +1010,8 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                         case MotionEvent.ACTION_DOWN:
                             zoomButtonStartX = event.getRawX();
                             zoomButtonStartY = event.getRawY();
-                            zoomButtonDX = view.getTranslationX() - event.getRawX();
-                            zoomButtonDY = view.getTranslationY() - event.getRawY();
+                            zoomButtonDX = view.getX() - event.getRawX();
+                            zoomButtonDY = view.getY() - event.getRawY();
                             isZoomButtonMoving = false;
                             return true;
                         case MotionEvent.ACTION_MOVE:
@@ -1024,11 +1024,21 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                                 isZoomButtonMoving = true;
                             }
 
-                            // Ensure the button stays within screen bounds (relative to its initial position)
-                            // For simplicity with translations, we'll clamp based on absolute screen coordinates relative to initial position
-                            // but since they are centered/positioned in XML, translation 0 is those spots.
-                            view.setTranslationX(newX);
-                            view.setTranslationY(newY);
+                            // Ensure the button stays within screen bounds
+                            Rect rect = new Rect();
+                            view.getWindowVisibleDisplayFrame(rect);
+                            View parent = (View) view.getParent();
+                            if (parent != null) {
+                                int[] loc = new int[2];
+                                parent.getLocationOnScreen(loc);
+                                rect.offset(-loc[0], -loc[1]);
+
+                                newX = Math.max(rect.left, Math.min(newX, rect.right - view.getWidth()));
+                                newY = Math.max(rect.top, Math.min(newY, rect.bottom - view.getHeight()));
+                            }
+
+                            view.setX(newX);
+                            view.setY(newY);
                             return true;
                         case MotionEvent.ACTION_UP:
                             if (!isZoomButtonMoving) {
@@ -1108,8 +1118,8 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                     case MotionEvent.ACTION_DOWN:
                         keyboardButtonStartX = event.getRawX();
                         keyboardButtonStartY = event.getRawY();
-                        keyboardButtonDX = view.getTranslationX() - event.getRawX();
-                        keyboardButtonDY = view.getTranslationY() - event.getRawY();
+                        keyboardButtonDX = view.getX() - event.getRawX();
+                        keyboardButtonDY = view.getY() - event.getRawY();
                         isKeyboardButtonMoving = false;
                         // Start long press timer (500ms)
                         longPressHandler.postDelayed(longPressRunnable, 500);
@@ -1125,8 +1135,21 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                             longPressHandler.removeCallbacks(longPressRunnable); // Cancel long press on move
                         }
 
-                        view.setTranslationX(newX);
-                        view.setTranslationY(newY);
+                        // Ensure the button stays within screen bounds
+                        Rect rect = new Rect();
+                        view.getWindowVisibleDisplayFrame(rect);
+                        View parent = (View) view.getParent();
+                        if (parent != null) {
+                            int[] loc = new int[2];
+                            parent.getLocationOnScreen(loc);
+                            rect.offset(-loc[0], -loc[1]);
+
+                            newX = Math.max(rect.left, Math.min(newX, rect.right - view.getWidth()));
+                            newY = Math.max(rect.top, Math.min(newY, rect.bottom - view.getHeight()));
+                        }
+
+                        view.setX(newX);
+                        view.setY(newY);
                         return true;
                     case MotionEvent.ACTION_UP:
                         longPressHandler.removeCallbacks(longPressRunnable); // Cancel long press
@@ -1171,8 +1194,8 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                     case MotionEvent.ACTION_DOWN:
                         fullKeyboardButtonStartX = event.getRawX();
                         fullKeyboardButtonStartY = event.getRawY();
-                        fullKeyboardButtonDX = view.getTranslationX() - event.getRawX();
-                        fullKeyboardButtonDY = view.getTranslationY() - event.getRawY();
+                        fullKeyboardButtonDX = view.getX() - event.getRawX();
+                        fullKeyboardButtonDY = view.getY() - event.getRawY();
                         isFullKeyboardButtonMoving = false;
                         return true;
                     case MotionEvent.ACTION_MOVE:
@@ -1185,8 +1208,21 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                             isFullKeyboardButtonMoving = true;
                         }
 
-                        view.setTranslationX(newX);
-                        view.setTranslationY(newY);
+                        // Ensure the button stays within screen bounds
+                        Rect rect = new Rect();
+                        view.getWindowVisibleDisplayFrame(rect);
+                        View parent = (View) view.getParent();
+                        if (parent != null) {
+                            int[] loc = new int[2];
+                            parent.getLocationOnScreen(loc);
+                            rect.offset(-loc[0], -loc[1]);
+
+                            newX = Math.max(rect.left, Math.min(newX, rect.right - view.getWidth()));
+                            newY = Math.max(rect.top, Math.min(newY, rect.bottom - view.getHeight()));
+                        }
+
+                        view.setX(newX);
+                        view.setY(newY);
                         return true;
                     case MotionEvent.ACTION_UP:
                         if (!isFullKeyboardButtonMoving) {
@@ -1228,8 +1264,8 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                     case MotionEvent.ACTION_DOWN:
                         mouseModeButtonStartX = event.getRawX();
                         mouseModeButtonStartY = event.getRawY();
-                        mouseModeButtonDX = view.getTranslationX() - event.getRawX();
-                        mouseModeButtonDY = view.getTranslationY() - event.getRawY();
+                        mouseModeButtonDX = view.getX() - event.getRawX();
+                        mouseModeButtonDY = view.getY() - event.getRawY();
                         isMouseModeButtonMoving = false;
                         return true;
                     case MotionEvent.ACTION_MOVE:
@@ -1242,8 +1278,21 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                             isMouseModeButtonMoving = true;
                         }
 
-                        view.setTranslationX(newX);
-                        view.setTranslationY(newY);
+                        // Ensure the button stays within screen bounds
+                        Rect rect = new Rect();
+                        view.getWindowVisibleDisplayFrame(rect);
+                        View parent = (View) view.getParent();
+                        if (parent != null) {
+                            int[] loc = new int[2];
+                            parent.getLocationOnScreen(loc);
+                            rect.offset(-loc[0], -loc[1]);
+
+                            newX = Math.max(rect.left, Math.min(newX, rect.right - view.getWidth()));
+                            newY = Math.max(rect.top, Math.min(newY, rect.bottom - view.getHeight()));
+                        }
+
+                        view.setX(newX);
+                        view.setY(newY);
                         return true;
                     case MotionEvent.ACTION_UP:
                         if (!isMouseModeButtonMoving) {
@@ -1373,8 +1422,8 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                     quickBarStartX = event.getRawX();
                     quickBarStartY = event.getRawY();
                     // Store offset from current translation to touch point
-                    quickBarDX = quickBarToggle.getTranslationX() - event.getRawX();
-                    quickBarDY = quickBarToggle.getTranslationY() - event.getRawY();
+                    quickBarDX = quickBarToggle.getX() - event.getRawX();
+                    quickBarDY = quickBarToggle.getY() - event.getRawY();
                     isQuickBarMoving = false;
                     return true;
 
@@ -1390,17 +1439,21 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                         float newX = event.getRawX() + quickBarDX;
                         float newY = event.getRawY() + quickBarDY;
 
-                        // Get screen bounds
-                        View decorView = getWindow().getDecorView();
-                        int maxX = decorView.getWidth() - quickBarToggle.getWidth();
-                        int maxY = decorView.getHeight() - quickBarToggle.getHeight();
+                        Rect rect = new Rect();
+                        view.getWindowVisibleDisplayFrame(rect);
+                        View parent = (View) view.getParent();
+                        if (parent != null) {
+                            int[] loc = new int[2];
+                            parent.getLocationOnScreen(loc);
+                            rect.offset(-loc[0], -loc[1]);
 
-                        // Clamp to screen bounds
-                        newX = Math.max(0, Math.min(newX, maxX));
-                        newY = Math.max(0, Math.min(newY, maxY));
+                            // Clamp to screen bounds
+                            newX = Math.max(rect.left, Math.min(newX, rect.right - view.getWidth()));
+                            newY = Math.max(rect.top, Math.min(newY, rect.bottom - view.getHeight()));
+                        }
 
-                        quickBarToggle.setTranslationX(newX);
-                        quickBarToggle.setTranslationY(newY);
+                        quickBarToggle.setX(newX);
+                        quickBarToggle.setY(newY);
                     }
                     return true;
 
@@ -1525,17 +1578,16 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                         }
 
                         // Ensure the button stays within screen bounds
-                        if (newX < 0) newX = 0;
-                        if (newY < 0) newY = 0;
+                        Rect rect = new Rect();
+                        view.getWindowVisibleDisplayFrame(rect);
+                        View parent = (View) view.getParent();
+                        if (parent != null) {
+                            int[] loc = new int[2];
+                            parent.getLocationOnScreen(loc);
+                            rect.offset(-loc[0], -loc[1]);
 
-                        int maxOffsetX = getWindow().getDecorView().getWidth() - view.getWidth();
-                        if (newX > maxOffsetX) {
-                            newX = maxOffsetX;
-                        }
-
-                        int maxOffsetY = getWindow().getDecorView().getHeight() - view.getHeight();
-                        if (newY > maxOffsetY) {
-                            newY = maxOffsetY;
+                            newX = Math.max(rect.left, Math.min(newX, rect.right - view.getWidth()));
+                            newY = Math.max(rect.top, Math.min(newY, rect.bottom - view.getHeight()));
                         }
 
                         view.setX(newX);
