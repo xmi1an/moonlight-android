@@ -411,6 +411,8 @@
     <string name="toggle_pan_zoom_mode">Toggle Pan/Zoom Mode</string>
     <string name="pan_zoom_mode_enabled">Pan/Zoom Mode Enabled</string>
     <string name="pan_zoom_mode_disabled">Pan/Zoom Mode Disabled</string>
+    <string name="title_two_thumb_zoom">Advanced Pan &amp; Zoom (Experimental)</string>
+    <string name="summary_two_thumb_zoom">Hold two fingers for a few seconds to activate a temporary pan/zoom mode. After zooming in, zooming back out will return to the original state.</string>
 
     <string name="title_analog_scrolling">Use an analog stick to scroll</string>
     <string name="summary_analog_scrolling">Select an analog stick to scroll when in mouse emulation mode</string>
@@ -471,6 +473,7 @@
     <string name="title_quick_bar_actions">Quick Bar Actions</string>
     <string name="summary_quick_bar_actions">Select which buttons appear in the Quick Bar</string>
     <string name="mouse_mode_toggled_multi_touch">Mouse Mode: Multi Touch</string>
+    <string name="pan_zoom_boundary_hit">Boundary Reached</string>
     <string name="mouse_mode_toggled_trackpad">Mouse Mode: Trackpad (Natural)</string>
     <string name="game_menu_toggle_mouse_mode_button">Toggle Mouse Mode Button</string>
 
@@ -798,8 +801,6 @@
 
     <string name="title_enable_commit_text">Enable commit-text input (swipe/voice)</string>
     <string name="summary_enable_commit_text">Forward multi-character text from soft keyboards (gesture typing, predictions, voice dictation). May break games that rely on key-by-key input.</string>
-    <string name="title_checkbox_remember_zoom_pan">Remember Zoom&amp;Pan</string>
-    <string name="summary_checkbox_remember_zoom_pan">Save changes to zoom and pan position between sessions</string>
     <string name="title_checkbox_enable_perf_overlay_bottom">Move overlay to bottom</string>
     <string name="summary_checkbox_enable_perf_overlay_bottom">Useful when Display in Top Center and Lite mode are enabled during non-native resolution streaming.</string>
     <string name="title_edit_profile">Edit Profile</string>

@@ -1,0 +1,93 @@
+
+> Configure project :app
+WARNING: BuildType 'debug' is both debuggable and has 'isMinifyEnabled' set to true.
+All code optimizations and obfuscation are disabled for debuggable builds.
+WARNING: BuildType 'debug' is both debuggable and has 'isMinifyEnabled' set to true.
+All code optimizations and obfuscation are disabled for debuggable builds.
+
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preRootDebugBuild UP-TO-DATE
+> Task :app:configureNdkBuildDebug[arm64-v8a]
+> Task :app:buildNdkBuildDebug[arm64-v8a]
+> Task :app:configureNdkBuildDebug[armeabi-v7a]
+> Task :app:buildNdkBuildDebug[armeabi-v7a]
+> Task :app:configureNdkBuildDebug[x86]
+> Task :app:buildNdkBuildDebug[x86]
+> Task :app:configureNdkBuildDebug[x86_64]
+> Task :app:buildNdkBuildDebug[x86_64]
+> Task :app:mergeRootDebugJniLibFolders UP-TO-DATE
+> Task :app:mergeRootDebugNativeLibs UP-TO-DATE
+> Task :app:stripRootDebugDebugSymbols UP-TO-DATE
+> Task :app:extractRootDebugNativeDebugMetadata UP-TO-DATE
+> Task :app:mergeRootDebugNativeDebugMetadata UP-TO-DATE
+> Task :app:generateRootDebugBuildConfig UP-TO-DATE
+> Task :app:javaPreCompileRootDebug UP-TO-DATE
+> Task :app:checkRootDebugAarMetadata UP-TO-DATE
+> Task :app:processRootDebugNavigationResources UP-TO-DATE
+> Task :app:compileRootDebugNavigationResources UP-TO-DATE
+> Task :app:generateRootDebugResValues UP-TO-DATE
+> Task :app:mapRootDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateRootDebugResources UP-TO-DATE
+> Task :app:mergeRootDebugResources UP-TO-DATE
+> Task :app:packageRootDebugResources UP-TO-DATE
+> Task :app:parseRootDebugLocalResources UP-TO-DATE
+> Task :app:createRootDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksRootDebug UP-TO-DATE
+> Task :app:processRootDebugMainManifest UP-TO-DATE
+> Task :app:processRootDebugManifest UP-TO-DATE
+> Task :app:processRootDebugManifestForPackage UP-TO-DATE
+> Task :app:mergeRootDebugShaders UP-TO-DATE
+> Task :app:compileRootDebugShaders NO-SOURCE
+> Task :app:generateRootDebugAssets UP-TO-DATE
+> Task :app:mergeRootDebugAssets UP-TO-DATE
+> Task :app:compressRootDebugAssets UP-TO-DATE
+> Task :app:checkRootDebugDuplicateClasses UP-TO-DATE
+> Task :app:extractProguardFiles UP-TO-DATE
+> Task :app:processRootDebugJavaRes NO-SOURCE
+> Task :app:mergeRootDebugJavaResource UP-TO-DATE
+> Task :app:validateSigningRootDebug UP-TO-DATE
+> Task :app:writeRootDebugAppMetadata UP-TO-DATE
+> Task :app:writeRootDebugSigningConfigVersions UP-TO-DATE
+> Task :app:processRootDebugResources FAILED
+
+[Incubating] Problems report is available at: file:///C:/Users/MILAN/Documents/Workspace/gitt/moonlight-android/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:processRootDebugResources'.
+> A failure occurred while executing com.android.build.gradle.internal.res.LinkApplicationAndroidResourcesTask$TaskAction
+   > Android resource linking failed
+     warn: removing resource com.limelight.root.noirdebug:string/category_perf_charts without required default value.
+     warn: removing resource com.limelight.root.noirdebug:string/desc_chart_decode without required default value.
+     warn: removing resource com.limelight.root.noirdebug:string/desc_chart_fps without required default value.
+     warn: removing resource com.limelight.root.noirdebug:string/desc_chart_latency without required default value.
+     warn: removing resource com.limelight.root.noirdebug:string/summary_checkbox_remember_zoom_pan without required default value.
+     warn: removing resource com.limelight.root.noirdebug:string/summary_enable_perf_charts without required default value.
+     warn: removing resource com.limelight.root.noirdebug:string/summary_perf_chart_decode without required default value.
+     warn: removing resource com.limelight.root.noirdebug:string/summary_perf_chart_fps without required default value.
+     warn: removing resource com.limelight.root.noirdebug:string/summary_perf_chart_latency without required default value.
+     warn: removing resource com.limelight.root.noirdebug:string/title_checkbox_remember_zoom_pan without required default value.
+     warn: removing resource com.limelight.root.noirdebug:string/title_enable_perf_charts without required default value.
+     warn: removing resource com.limelight.root.noirdebug:string/title_perf_chart_decode without required default value.
+     warn: removing resource com.limelight.root.noirdebug:string/title_perf_chart_fps without required default value.
+     warn: removing resource com.limelight.root.noirdebug:string/title_perf_chart_latency without required default value.
+     com.limelight.app-main-46:/xml/preferences.xml:644: error: resource string/summary_checkbox_remember_zoom_pan (aka com.limelight.root.noirdebug:string/summary_checkbox_remember_zoom_pan) not found.
+     com.limelight.app-main-46:/xml/preferences.xml:644: error: resource string/title_checkbox_remember_zoom_pan (aka com.limelight.root.noirdebug:string/title_checkbox_remember_zoom_pan) not found.
+     error: failed linking file resources.
+
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.13/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 4s
+39 actionable tasks: 9 executed, 30 up-to-date

@@ -145,6 +145,7 @@ public class PreferenceConfiguration {
     private static final String CHECKBOX_TRACKPAD_SWAP_AXIS = "checkbox_trackpad_swap_axis";
 
     private static final String CHECKBOX_ENABLE_COMMIT_TEXT = "checkbox_enable_commit_text";
+    private static final String CHECKBOX_TWO_THUMB_ZOOM = "checkbox_two_thumb_zoom";
 
     static final String DEFAULT_RESOLUTION = "1280x720";
     static final String DEFAULT_FPS = "60";
@@ -198,6 +199,7 @@ public class PreferenceConfiguration {
     private static final boolean DEFAULT_FORCE_MOTION_SENSORS_FALLBACK = false;
     private static final boolean DEFAULT_ENABLE_RUMBLE = true;
     private static final boolean DEFAULT_PREVENT_PACKET_LOSS = false;
+    private static final boolean DEFAULT_TWO_THUMB_ZOOM = false;
     private static final boolean DEFAULT_GAMEPAD_ENABLE_BATTERY_REPORT = true;
     private static final boolean DEFAULT_FORCE_QWERTY = true;
     private static final boolean DEFAULT_SEND_META_ON_PHYSICAL_BACK = false;
@@ -221,7 +223,7 @@ public class PreferenceConfiguration {
     private static final boolean DEFAULT_SHOW_OVERLAY_MOUSE_MODE_TOGGLE_BUTTON = false;
     private static final Set<String> DEFAULT_QUICK_BAR_ACTIONS = new HashSet<>(Arrays.asList("keyboard", "zoom", "hud", "controller", "disconnect", "lock_keyboard"));
 
-    private static final boolean DEFAULT_REMEMBER_ZOOM_PAN = false;
+    private static final boolean DEFAULT_REMEMBER_ZOOM_PAN = true;
     private static final float DEFAULT_ZOOM_SCALE = 1.0f;
     private static final float DEFAULT_PAN_OFFSET = 0.0f;
     private static final boolean DEFAULT_FULL_SCREEN = true;
@@ -394,6 +396,7 @@ public class PreferenceConfiguration {
     public boolean preventPacketLoss;
 
     public boolean rememberZoomPan;
+    public boolean twoThumbZoom;
     public float zoomScale;
     public float panOffsetX;
     public float panOffsetY;
@@ -998,6 +1001,7 @@ private static int getFramePacingValue(Context context) {
         config.enableTouchSensitivity=prefs.getBoolean("checkbox_enable_touch_sensitivity",false);
 
         config.enableMouseLocalCursor=prefs.getBoolean("checkbox_mouse_local_cursor",false);
+        config.twoThumbZoom = prefs.getBoolean(CHECKBOX_TWO_THUMB_ZOOM, DEFAULT_TWO_THUMB_ZOOM);
 
         config.enableMultiTouchGestures = prefs.getBoolean("checkbox_multi_touch_gestures", false);
 
@@ -1047,7 +1051,7 @@ private static int getFramePacingValue(Context context) {
         config.customRefreshRate = prefs.getString(CUSTOM_REFRESH_RATE_PREF_STRING, null);
 //        config.customBitrate = prefs.getString(CUSTOM_BITRATE_PREF_STRING, null);
 
-        config.rememberZoomPan = prefs.getBoolean(CHECKBOX_REMEMBER_ZOOM_PAN, DEFAULT_REMEMBER_ZOOM_PAN);
+        config.rememberZoomPan = true;
         config.zoomScale = prefs.getFloat(NUMBER_ZOOM_SCALE, DEFAULT_ZOOM_SCALE);
         config.panOffsetX = prefs.getFloat(NUMBER_PAN_OFFSET_X, DEFAULT_PAN_OFFSET);
         config.panOffsetY = prefs.getFloat(NUMBER_PAN_OFFSET_Y, DEFAULT_PAN_OFFSET);

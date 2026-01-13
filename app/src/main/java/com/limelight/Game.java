@@ -150,6 +150,9 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
     // Only 2 touches are supported
     private final TouchContext[] touchContextMap = new TouchContext[2];
     private final TouchContext[] trackpadContextMap = new TouchContext[2];
+    private View panZoomBoundaryView;
+    private View panZoomWarningView;
+    private View gameScreenBorderView;
     private PanZoomHandler panZoomHandler;
     private long threeFingerDownTime = 0;
     private long fourFingerDownTime = 0;
@@ -509,6 +512,10 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
         backgroundTouchView.setOnTouchListener(this);
 
 
+        panZoomBoundaryView = findViewById(R.id.panZoomBoundary);
+        panZoomWarningView = findViewById(R.id.panZoomWarning);
+        gameScreenBorderView = findViewById(R.id.gameScreenBorder);
+
         panZoomHandler = new PanZoomHandler(
                 getApplicationContext(),
                 this,
@@ -516,6 +523,9 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                 streamContainer,
                 prefConfig
         );
+        panZoomHandler.setBoundaryView(panZoomBoundaryView);
+        panZoomHandler.setWarningView(panZoomWarningView);
+        panZoomHandler.setGameScreenBorderView(gameScreenBorderView);
 
         // Restore previous zoom & pan if enabled and saved
         if (prefConfig.rememberZoomPan) {
@@ -990,7 +1000,7 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                 updateZoomButtonAppearance();
 
                 // Restore saved position
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+                SharedPreferences prefs = ProfilesManager.getInstance().getOverlayingSharedPreferences(this);
                 overlayToggleButton.setTranslationX(prefs.getFloat("overlay_zoom_x", 0));
                 overlayToggleButton.setTranslationY(prefs.getFloat("overlay_zoom_y", 0));
 
@@ -1027,7 +1037,7 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                                 updateZoomButtonAppearance();
                             } else {
                                 // Save position
-                                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(Game.this).edit();
+                                SharedPreferences.Editor editor = ProfilesManager.getInstance().getOverlayingSharedPreferences(Game.this).edit();
                                 editor.putFloat("overlay_zoom_x", view.getTranslationX());
                                 editor.putFloat("overlay_zoom_y", view.getTranslationY());
                                 editor.apply();
@@ -1058,7 +1068,7 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
     private void setupFloatingKeyboardButton() {
         if (floatingKeyboardButton != null) {
             // Restore visibility from saved preferences
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences prefs = ProfilesManager.getInstance().getOverlayingSharedPreferences(this);
             boolean wasVisible = prefs.getBoolean("floating_keyboard_button_visible", false);
             floatingKeyboardButton.setVisibility(wasVisible ? View.VISIBLE : View.GONE);
 
@@ -1125,7 +1135,7 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                             toggleKeyboard();
                         } else {
                             // Save position
-                            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(Game.this).edit();
+                            SharedPreferences.Editor editor = ProfilesManager.getInstance().getOverlayingSharedPreferences(Game.this).edit();
                             editor.putFloat("floating_keyboard_x", view.getTranslationX());
                             editor.putFloat("floating_keyboard_y", view.getTranslationY());
                             editor.apply();
@@ -1147,7 +1157,7 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
     private void setupFloatingFullKeyboardButton() {
         if (floatingFullKeyboardButton != null) {
             // Restore visibility from saved preferences
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences prefs = ProfilesManager.getInstance().getOverlayingSharedPreferences(this);
             boolean wasVisible = prefs.getBoolean("floating_full_keyboard_button_visible", false);
             floatingFullKeyboardButton.setVisibility(wasVisible ? View.VISIBLE : View.GONE);
 
@@ -1184,7 +1194,7 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                             toggleFullKeyboard();
                         } else {
                             // Save position
-                            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(Game.this).edit();
+                            SharedPreferences.Editor editor = ProfilesManager.getInstance().getOverlayingSharedPreferences(Game.this).edit();
                             editor.putFloat("floating_full_keyboard_x", view.getTranslationX());
                             editor.putFloat("floating_full_keyboard_y", view.getTranslationY());
                             editor.apply();
@@ -1205,7 +1215,7 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
             overlayToggleMouseModeButton.setVisibility(prefConfig.showOverlayMouseModeToggleButton ? View.VISIBLE : View.GONE);
 
             // Restore position
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences prefs = ProfilesManager.getInstance().getOverlayingSharedPreferences(this);
             overlayToggleMouseModeButton.setTranslationX(prefs.getFloat("overlay_mouse_mode_x", 0));
             overlayToggleMouseModeButton.setTranslationY(prefs.getFloat("overlay_mouse_mode_y", 0));
 
@@ -1241,7 +1251,7 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                             toggleMouseMode();
                         } else {
                             // Save position
-                            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(Game.this).edit();
+                            SharedPreferences.Editor editor = ProfilesManager.getInstance().getOverlayingSharedPreferences(Game.this).edit();
                             editor.putFloat("overlay_mouse_mode_x", view.getTranslationX());
                             editor.putFloat("overlay_mouse_mode_y", view.getTranslationY());
                             editor.apply();
@@ -2179,34 +2189,7 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
             highPerfWifiLock.release();
         }
 
-        // Save zoom/pan before other cleanup
-        if (prefConfig != null && prefConfig.rememberZoomPan && panZoomHandler != null) {
-            SharedPreferences basePrefs = PreferenceManager.getDefaultSharedPreferences(this);
-            basePrefs.edit()
-                    .putFloat("number_zoom_scale", panZoomHandler.getScaleFactor())
-                    .putFloat("number_pan_offset_x", panZoomHandler.getChildX())
-                    .putFloat("number_pan_offset_y", panZoomHandler.getChildY())
-                    .apply();
-        }
 
-        // Save floating button visibility states
-        if (prefConfig != null) {
-            SharedPreferences basePrefs = PreferenceManager.getDefaultSharedPreferences(this);
-            SharedPreferences.Editor editor = basePrefs.edit();
-            if (floatingKeyboardButton != null) {
-                editor.putBoolean("floating_keyboard_button_visible", floatingKeyboardButton.getVisibility() == View.VISIBLE);
-            }
-            if (floatingFullKeyboardButton != null) {
-                editor.putBoolean("floating_full_keyboard_button_visible", floatingFullKeyboardButton.getVisibility() == View.VISIBLE);
-            }
-            if (quickBarToggle != null) {
-                editor.putBoolean("quick_bar_visible", quickBarToggle.getVisibility() == View.VISIBLE);
-            }
-            if (shortcutBar != null) {
-                editor.putBoolean("shortcut_bar_visible", shortcutBar.isVisible());
-            }
-            editor.apply();
-        }
 
         if (connectedToUsbDriverService) {
             // Unbind from the discovery service
@@ -2235,6 +2218,28 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
 
     @Override
     protected void onStop() {
+
+        // Save floating button visibility states
+        if (prefConfig != null) {
+            SharedPreferences basePrefs = ProfilesManager.getInstance().getOverlayingSharedPreferences(this);
+            SharedPreferences.Editor editor = basePrefs.edit();
+            if (floatingKeyboardButton != null) {
+                editor.putBoolean("floating_keyboard_button_visible", floatingKeyboardButton.getVisibility() == View.VISIBLE);
+            }
+            if (floatingFullKeyboardButton != null) {
+                editor.putBoolean("floating_full_keyboard_button_visible", floatingFullKeyboardButton.getVisibility() == View.VISIBLE);
+            }
+            if (quickBarToggle != null) {
+                editor.putBoolean("quick_bar_visible", quickBarToggle.getVisibility() == View.VISIBLE);
+            }
+            if (shortcutBar != null) {
+                editor.putBoolean("shortcut_bar_visible", shortcutBar.isVisible());
+            }
+            editor.apply();
+        }
+
+        saveZoomPan();
+
         super.onStop();
 
         SpinnerDialog.closeDialogs(this);
@@ -3567,10 +3572,19 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                         return true;
                     }
 
-                    if (isPanZoomMode) {
-                        // panning the streamView
+                    if (isPanZoomMode || prefConfig.twoThumbZoom) {
                         panZoomHandler.handleTouchEvent(event);
-                        return true;
+
+                        // If temporary mode is active, only consume multi-touch events
+                        // so single-finger touches can interact with the game.
+                        if (panZoomHandler.isTemporaryZoomModeActive()) {
+                            if (event.getPointerCount() > 1) {
+                                return true;
+                            }
+                        } else if (isPanZoomMode) {
+                            // Persistent pan/zoom mode still consumes all touches
+                            return true;
+                        }
                     }
 
                     // If touch is disabled or not initialized, we'll try panning the streamView
@@ -4482,7 +4496,7 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
     }
 
     public boolean isZoomModeEnabled() {
-        return isPanZoomMode;
+        return isPanZoomMode || (panZoomHandler != null && panZoomHandler.isTemporaryZoomModeActive());
     }
     public void toggleZoomMode() {
         this.isPanZoomMode = !this.isPanZoomMode;
@@ -4491,11 +4505,29 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
         } else {
             Toast.makeText(this, getString(R.string.pan_zoom_mode_disabled), Toast.LENGTH_SHORT).show();
         }
+        updateZoomStatus();
         updateZoomButtonAppearance();
 
         if (ExternalDisplayControlActivity.instance != null) {
             ExternalDisplayControlActivity.instance.toggleZoomMode(false);
         }
+    }
+
+    public void updateZoomStatus() {
+        runOnUiThread(() -> {
+            boolean active = isZoomModeEnabled();
+            if (panZoomBoundaryView != null) {
+                panZoomBoundaryView.setVisibility(active ? View.VISIBLE : View.GONE);
+            }
+            if (gameScreenBorderView != null) {
+                gameScreenBorderView.setVisibility(active ? View.VISIBLE : View.GONE);
+            }
+            // Warning view should only be visible when actually hitting boundary,
+            // but we use it as a persistent border in some cases?
+            // In PanZoomHandler, constrainToScreen() handles showing the warning.
+            // So here we just ensure it's not hidden if it should be shown.
+            // Actually, let's keep it simple and just sync boundary views.
+        });
     }
 
     public void rotateScreen() {
@@ -4711,6 +4743,30 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
             getClipboard(-1);
         }
         finish();
+    }
+
+    public void saveZoomPan() {
+        if (prefConfig != null && panZoomHandler != null) {
+            // Only save if not in temporary zoom mode, or save the initial values if in temp mode
+            float saveScale = panZoomHandler.isTemporaryZoomModeActive() ?
+                              panZoomHandler.getInitialScaleFactor() : panZoomHandler.getScaleFactor();
+            float saveX = panZoomHandler.isTemporaryZoomModeActive() ?
+                          panZoomHandler.getInitialChildX() : panZoomHandler.getChildX();
+            float saveY = panZoomHandler.isTemporaryZoomModeActive() ?
+                          panZoomHandler.getInitialChildY() : panZoomHandler.getChildY();
+
+            SharedPreferences basePrefs = ProfilesManager.getInstance().getOverlayingSharedPreferences(this);
+            basePrefs.edit()
+                    .putFloat("number_zoom_scale", saveScale)
+                    .putFloat("number_pan_offset_x", saveX)
+                    .putFloat("number_pan_offset_y", saveY)
+                    .apply();
+
+            // Also update prefConfig so it's fresh if we stay in same process
+            prefConfig.zoomScale = saveScale;
+            prefConfig.panOffsetX = saveX;
+            prefConfig.panOffsetY = saveY;
+        }
     }
 
     public void quit() {

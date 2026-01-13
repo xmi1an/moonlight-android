@@ -23,6 +23,40 @@
     <requestFocus />
     </com.limelight.ui.StreamContainer>
 
+    <View
+        android:id="@+id/panZoomBoundary"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/pan_zoom_border"
+        android:visibility="gone"
+        android:elevation="9998dp"
+        android:alpha="0.8" />
+
+    <View
+        android:id="@+id/gameScreenBorder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/game_screen_border"
+        android:visibility="gone"
+        android:elevation="9998dp" />
+
+    <TextView
+        android:id="@+id/panZoomWarning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="50dp"
+        android:background="#D0FF4444"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:text="@string/pan_zoom_boundary_hit"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:visibility="gone"
+        android:elevation="9999dp" />
+
 <!--    <com.limelight.ui.ApertureViewGroup-->
 <!--        android:layout_width="match_parent"-->
 <!--        android:layout_height="match_parent"-->
