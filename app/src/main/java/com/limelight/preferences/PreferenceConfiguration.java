@@ -122,6 +122,7 @@ public class PreferenceConfiguration {
     private static final String CHECKBOX_SHOW_OVERLAY_ZOOM_TOGGLE_BUTTON = "checkbox_show_overlay_zoom_toggle_button";
     private static final String CHECKBOX_ENABLE_FLOATING_KEYBOARD_BUTTON = "checkbox_enable_floating_keyboard_button";
     private static final String CHECKBOX_ENABLE_QUICK_BAR = "checkbox_enable_quick_bar";
+    private static final String CHECKBOX_SHOW_OVERLAY_MOUSE_MODE_TOGGLE_BUTTON = "checkbox_show_overlay_mouse_mode_toggle_button";
     private static final String QUICK_BAR_ACTIONS = "quick_bar_actions";
 
     //竖屏模式
@@ -217,6 +218,7 @@ public class PreferenceConfiguration {
     private static final boolean DEFAULT_SHOW_OVERLAY_TOGGLE_BUTTON = false;
     private static final boolean DEFAULT_ENABLE_FLOATING_KEYBOARD_BUTTON = false;
     private static final boolean DEFAULT_ENABLE_QUICK_BAR = false;
+    private static final boolean DEFAULT_SHOW_OVERLAY_MOUSE_MODE_TOGGLE_BUTTON = false;
     private static final Set<String> DEFAULT_QUICK_BAR_ACTIONS = new HashSet<>(Arrays.asList("keyboard", "zoom", "hud", "controller", "disconnect", "lock_keyboard"));
 
     private static final boolean DEFAULT_REMEMBER_ZOOM_PAN = false;
@@ -293,6 +295,7 @@ public class PreferenceConfiguration {
     public boolean enableFloatingButton;
     public boolean showOverlayZoomToggleButton;
     public boolean showFloatingKeyboardButton;
+    public boolean showOverlayMouseModeToggleButton;
     public boolean enableQuickBar;
     public Set<String> quickBarActions;
 
@@ -952,6 +955,7 @@ private static int getFramePacingValue(Context context) {
         config.enableFloatingButton = prefs.getBoolean(CHECKBOX_ENABLE_FLOATING_BUTTON,DEFAULT_ENABLE_FLOATING_BUTTON);
         config.showOverlayZoomToggleButton = prefs.getBoolean(CHECKBOX_SHOW_OVERLAY_ZOOM_TOGGLE_BUTTON, DEFAULT_SHOW_OVERLAY_TOGGLE_BUTTON);
         config.showFloatingKeyboardButton = prefs.getBoolean(CHECKBOX_ENABLE_FLOATING_KEYBOARD_BUTTON, DEFAULT_ENABLE_FLOATING_KEYBOARD_BUTTON);
+        config.showOverlayMouseModeToggleButton = prefs.getBoolean(CHECKBOX_SHOW_OVERLAY_MOUSE_MODE_TOGGLE_BUTTON, DEFAULT_SHOW_OVERLAY_MOUSE_MODE_TOGGLE_BUTTON);
         config.enableQuickBar = prefs.getBoolean(CHECKBOX_ENABLE_QUICK_BAR, DEFAULT_ENABLE_QUICK_BAR);
         config.quickBarActions = prefs.getStringSet(QUICK_BAR_ACTIONS, DEFAULT_QUICK_BAR_ACTIONS);
         config.autoOrientation = prefs.getBoolean(CHECKBOX_AUTO_ORIENTATION,false);

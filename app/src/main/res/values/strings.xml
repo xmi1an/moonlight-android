@@ -463,11 +463,16 @@
     <string name="summary_show_overlay_zoom_toggle_button">Displays a draggable button at the top of the screen to toggle pan/zoom mode.</string>
     <string name="title_show_floating_keyboard_button">Show floating keyboard button</string>
     <string name="summary_show_floating_keyboard_button">Displays a draggable button to toggle the soft keyboard.</string>
+    <string name="title_show_overlay_mouse_mode_toggle_button">Show overlay mouse mode toggle button</string>
+    <string name="summary_show_overlay_mouse_mode_toggle_button">Displays a draggable button to quickly toggle between Multi Touch and Trackpad modes.</string>
     <string name="title_enable_quick_bar">Enable Quick Bar</string>
     <string name="summary_enable_quick_bar">Show an expandable quick access bar with common actions during streaming.</string>
     <string name="quick_bar_toggle">Toggle Quick Bar</string>
     <string name="title_quick_bar_actions">Quick Bar Actions</string>
     <string name="summary_quick_bar_actions">Select which buttons appear in the Quick Bar</string>
+    <string name="mouse_mode_toggled_multi_touch">Mouse Mode: Multi Touch</string>
+    <string name="mouse_mode_toggled_trackpad">Mouse Mode: Trackpad (Natural)</string>
+    <string name="game_menu_toggle_mouse_mode_button">Toggle Mouse Mode Button</string>
 
     <!-- Shortcut Bar -->
     <string name="shortcut_bar_toggle">Keyboard Shortcuts</string>

@@ -325,6 +325,12 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
     private boolean isQuickBarMoving = false;
     private float quickBarStartX, quickBarStartY;
 
+    // Mouse mode toggle button
+    private ImageButton overlayToggleMouseModeButton;
+    private float mouseModeButtonDX, mouseModeButtonDY;
+    private boolean isMouseModeButtonMoving = false;
+    private float mouseModeButtonStartX, mouseModeButtonStartY;
+
     // Shortcut Bar for keyboard shortcuts
     private com.limelight.ui.ShortcutBar shortcutBar;
 
@@ -918,6 +924,9 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
         floatingFullKeyboardButton = findViewById(R.id.floatingFullKeyboardButton);
         setupFloatingFullKeyboardButton();
 
+        overlayToggleMouseModeButton = findViewById(R.id.overlayToggleMouseModeButton);
+        setupOverlayToggleMouseModeButton();
+
         // Initialize Quick Bar
         setupQuickBar();
 
@@ -980,14 +989,19 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                 // Set initial appearance based on current state
                 updateZoomButtonAppearance();
 
+                // Restore saved position
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+                overlayToggleButton.setTranslationX(prefs.getFloat("overlay_zoom_x", 0));
+                overlayToggleButton.setTranslationY(prefs.getFloat("overlay_zoom_y", 0));
+
                 // Touch listener for drag and click
                 overlayToggleButton.setOnTouchListener((view, event) -> {
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_DOWN:
                             zoomButtonStartX = event.getRawX();
                             zoomButtonStartY = event.getRawY();
-                            zoomButtonDX = view.getX() - event.getRawX();
-                            zoomButtonDY = view.getY() - event.getRawY();
+                            zoomButtonDX = view.getTranslationX() - event.getRawX();
+                            zoomButtonDY = view.getTranslationY() - event.getRawY();
                             isZoomButtonMoving = false;
                             return true;
                         case MotionEvent.ACTION_MOVE:
@@ -1000,28 +1014,23 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                                 isZoomButtonMoving = true;
                             }
 
-                            // Ensure the button stays within screen bounds
-                            if (newX < 0) newX = 0;
-                            if (newY < 0) newY = 0;
-
-                            int maxOffsetX = getWindow().getDecorView().getWidth() - view.getWidth();
-                            if (newX > maxOffsetX) {
-                                newX = maxOffsetX;
-                            }
-
-                            int maxOffsetY = getWindow().getDecorView().getHeight() - view.getHeight();
-                            if (newY > maxOffsetY) {
-                                newY = maxOffsetY;
-                            }
-
-                            view.setX(newX);
-                            view.setY(newY);
+                            // Ensure the button stays within screen bounds (relative to its initial position)
+                            // For simplicity with translations, we'll clamp based on absolute screen coordinates relative to initial position
+                            // but since they are centered/positioned in XML, translation 0 is those spots.
+                            view.setTranslationX(newX);
+                            view.setTranslationY(newY);
                             return true;
                         case MotionEvent.ACTION_UP:
                             if (!isZoomButtonMoving) {
                                 // It's a click event, toggle zoom mode
                                 toggleZoomMode();
                                 updateZoomButtonAppearance();
+                            } else {
+                                // Save position
+                                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(Game.this).edit();
+                                editor.putFloat("overlay_zoom_x", view.getTranslationX());
+                                editor.putFloat("overlay_zoom_y", view.getTranslationY());
+                                editor.apply();
                             }
                             isZoomButtonMoving = false;
                             return true;
@@ -1052,6 +1061,10 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             boolean wasVisible = prefs.getBoolean("floating_keyboard_button_visible", false);
             floatingKeyboardButton.setVisibility(wasVisible ? View.VISIBLE : View.GONE);
+
+            // Restore position
+            floatingKeyboardButton.setTranslationX(prefs.getFloat("floating_keyboard_x", 0));
+            floatingKeyboardButton.setTranslationY(prefs.getFloat("floating_keyboard_y", 0));
 
             // Update color if already locked
             if (streamContainer != null && streamContainer.isKeepKeyboardOpen()) {
@@ -1085,8 +1098,8 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                     case MotionEvent.ACTION_DOWN:
                         keyboardButtonStartX = event.getRawX();
                         keyboardButtonStartY = event.getRawY();
-                        keyboardButtonDX = view.getX() - event.getRawX();
-                        keyboardButtonDY = view.getY() - event.getRawY();
+                        keyboardButtonDX = view.getTranslationX() - event.getRawX();
+                        keyboardButtonDY = view.getTranslationY() - event.getRawY();
                         isKeyboardButtonMoving = false;
                         // Start long press timer (500ms)
                         longPressHandler.postDelayed(longPressRunnable, 500);
@@ -1102,28 +1115,20 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                             longPressHandler.removeCallbacks(longPressRunnable); // Cancel long press on move
                         }
 
-                        // Ensure the button stays within screen bounds
-                        if (newX < 0) newX = 0;
-                        if (newY < 0) newY = 0;
-
-                        int maxOffsetX = getWindow().getDecorView().getWidth() - view.getWidth();
-                        if (newX > maxOffsetX) {
-                            newX = maxOffsetX;
-                        }
-
-                        int maxOffsetY = getWindow().getDecorView().getHeight() - view.getHeight();
-                        if (newY > maxOffsetY) {
-                            newY = maxOffsetY;
-                        }
-
-                        view.setX(newX);
-                        view.setY(newY);
+                        view.setTranslationX(newX);
+                        view.setTranslationY(newY);
                         return true;
                     case MotionEvent.ACTION_UP:
                         longPressHandler.removeCallbacks(longPressRunnable); // Cancel long press
                         if (!isKeyboardButtonMoving) {
                             // It's a click event, toggle system keyboard
                             toggleKeyboard();
+                        } else {
+                            // Save position
+                            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(Game.this).edit();
+                            editor.putFloat("floating_keyboard_x", view.getTranslationX());
+                            editor.putFloat("floating_keyboard_y", view.getTranslationY());
+                            editor.apply();
                         }
                         isKeyboardButtonMoving = false;
                         return true;
@@ -1146,14 +1151,18 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
             boolean wasVisible = prefs.getBoolean("floating_full_keyboard_button_visible", false);
             floatingFullKeyboardButton.setVisibility(wasVisible ? View.VISIBLE : View.GONE);
 
+            // Restore position
+            floatingFullKeyboardButton.setTranslationX(prefs.getFloat("floating_full_keyboard_x", 0));
+            floatingFullKeyboardButton.setTranslationY(prefs.getFloat("floating_full_keyboard_y", 0));
+
             // Always set up touch listener for drag and click
             floatingFullKeyboardButton.setOnTouchListener((view, event) -> {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         fullKeyboardButtonStartX = event.getRawX();
                         fullKeyboardButtonStartY = event.getRawY();
-                        fullKeyboardButtonDX = view.getX() - event.getRawX();
-                        fullKeyboardButtonDY = view.getY() - event.getRawY();
+                        fullKeyboardButtonDX = view.getTranslationX() - event.getRawX();
+                        fullKeyboardButtonDY = view.getTranslationY() - event.getRawY();
                         isFullKeyboardButtonMoving = false;
                         return true;
                     case MotionEvent.ACTION_MOVE:
@@ -1166,27 +1175,19 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                             isFullKeyboardButtonMoving = true;
                         }
 
-                        // Ensure the button stays within screen bounds
-                        if (newX < 0) newX = 0;
-                        if (newY < 0) newY = 0;
-
-                        int maxOffsetX = getWindow().getDecorView().getWidth() - view.getWidth();
-                        if (newX > maxOffsetX) {
-                            newX = maxOffsetX;
-                        }
-
-                        int maxOffsetY = getWindow().getDecorView().getHeight() - view.getHeight();
-                        if (newY > maxOffsetY) {
-                            newY = maxOffsetY;
-                        }
-
-                        view.setX(newX);
-                        view.setY(newY);
+                        view.setTranslationX(newX);
+                        view.setTranslationY(newY);
                         return true;
                     case MotionEvent.ACTION_UP:
                         if (!isFullKeyboardButtonMoving) {
                             // It's a click event, toggle in-app full keyboard
                             toggleFullKeyboard();
+                        } else {
+                            // Save position
+                            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(Game.this).edit();
+                            editor.putFloat("floating_full_keyboard_x", view.getTranslationX());
+                            editor.putFloat("floating_full_keyboard_y", view.getTranslationY());
+                            editor.apply();
                         }
                         isFullKeyboardButtonMoving = false;
                         return true;
@@ -1195,6 +1196,98 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                 }
             });
         }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void setupOverlayToggleMouseModeButton() {
+        if (overlayToggleMouseModeButton != null) {
+            // Restore visibility from saved preferences
+            overlayToggleMouseModeButton.setVisibility(prefConfig.showOverlayMouseModeToggleButton ? View.VISIBLE : View.GONE);
+
+            // Restore position
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            overlayToggleMouseModeButton.setTranslationX(prefs.getFloat("overlay_mouse_mode_x", 0));
+            overlayToggleMouseModeButton.setTranslationY(prefs.getFloat("overlay_mouse_mode_y", 0));
+
+            // Set initial appearance
+            updateMouseModeButtonAppearance();
+
+            // Always set up touch listener for drag and click
+            overlayToggleMouseModeButton.setOnTouchListener((view, event) -> {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        mouseModeButtonStartX = event.getRawX();
+                        mouseModeButtonStartY = event.getRawY();
+                        mouseModeButtonDX = view.getTranslationX() - event.getRawX();
+                        mouseModeButtonDY = view.getTranslationY() - event.getRawY();
+                        isMouseModeButtonMoving = false;
+                        return true;
+                    case MotionEvent.ACTION_MOVE:
+                        float newX = event.getRawX() + mouseModeButtonDX;
+                        float newY = event.getRawY() + mouseModeButtonDY;
+
+                        // Check if it's a move or just a tap
+                        if (Math.abs(event.getRawX() - mouseModeButtonStartX) > CLICK_ACTION_THRESHOLD ||
+                                Math.abs(event.getRawY() - mouseModeButtonStartY) > CLICK_ACTION_THRESHOLD) {
+                            isMouseModeButtonMoving = true;
+                        }
+
+                        view.setTranslationX(newX);
+                        view.setTranslationY(newY);
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        if (!isMouseModeButtonMoving) {
+                            // It's a click event, toggle mouse mode
+                            toggleMouseMode();
+                        } else {
+                            // Save position
+                            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(Game.this).edit();
+                            editor.putFloat("overlay_mouse_mode_x", view.getTranslationX());
+                            editor.putFloat("overlay_mouse_mode_y", view.getTranslationY());
+                            editor.apply();
+                        }
+                        isMouseModeButtonMoving = false;
+                        return true;
+                    default:
+                        return false;
+                }
+            });
+        }
+    }
+
+    private void updateMouseModeButtonAppearance() {
+        if (overlayToggleMouseModeButton != null) {
+            if (prefConfig.touchscreenTrackpad) {
+                // Trackpad mode - Mouse icon with Cyan tint
+                overlayToggleMouseModeButton.setImageResource(R.drawable.ic_mouse_mode);
+                overlayToggleMouseModeButton.setColorFilter(android.graphics.Color.CYAN, android.graphics.PorterDuff.Mode.SRC_IN);
+            } else {
+                // Multi-touch mode - Finger icon
+                overlayToggleMouseModeButton.setImageResource(R.drawable.ic_touch_mode);
+                overlayToggleMouseModeButton.clearColorFilter();
+            }
+        }
+    }
+
+    private void toggleMouseMode() {
+        // Toggle between Multi-touch (0) and Trackpad natural (2)
+        int newMode = prefConfig.touchscreenTrackpad ? 0 : 2;
+        applyMouseMode(newMode);
+
+        // Save preference if enabled
+        if (prefConfig.rememberMouseMode) {
+            ProfilesManager.getInstance().getOverlayingSharedPreferences(this)
+                    .edit()
+                    .putString("mouse_mode_list", String.valueOf(newMode))
+                    .apply();
+        }
+
+        // Show toast
+        String message = (newMode == 0) ? getString(R.string.mouse_mode_toggled_multi_touch) : getString(R.string.mouse_mode_toggled_trackpad);
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+
+        // Update appearance
+        updateMouseModeButtonAppearance();
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -4721,6 +4814,19 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
         if (floatingFullKeyboardButton != null) {
             boolean isVisible = floatingFullKeyboardButton.getVisibility() == View.VISIBLE;
             floatingFullKeyboardButton.setVisibility(isVisible ? View.GONE : View.VISIBLE);
+        }
+    }
+
+    public void toggleOverlayMouseModeButtonVisibility() {
+        if (overlayToggleMouseModeButton != null) {
+            boolean isVisible = overlayToggleMouseModeButton.getVisibility() == View.VISIBLE;
+            overlayToggleMouseModeButton.setVisibility(isVisible ? View.GONE : View.VISIBLE);
+
+            // Save preference
+            ProfilesManager.getInstance().getOverlayingSharedPreferences(this)
+                    .edit()
+                    .putBoolean("checkbox_show_overlay_mouse_mode_toggle_button", !isVisible)
+                    .apply();
         }
     }
 

@@ -144,6 +144,20 @@
         android:visibility="gone"
         android:elevation="9999dp" />
 
+    <ImageButton
+        android:id="@+id/overlayToggleMouseModeButton"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="168dp"
+        android:background="@drawable/floating_menu_button"
+        android:src="@drawable/ic_touch_mode"
+        android:padding="4dp"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/game_menu_toggle_mouse_mode_button"
+        android:visibility="gone"
+        android:elevation="9999dp" />
+
     <!-- Quick Bar -->
     <include layout="@layout/quick_bar" />
 

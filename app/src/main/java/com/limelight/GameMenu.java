@@ -260,6 +260,7 @@ public class GameMenu implements Game.GameMenuCallbacks {
         options.add(new MenuOption(getString(R.string.game_menu_toggle_quick_bar), true, game::toggleQuickBarVisibility));
         options.add(new MenuOption(getString(R.string.game_menu_toggle_floating_keyboard_button), true, game::toggleFloatingKeyboardButtonVisibility));
         options.add(new MenuOption(getString(R.string.game_menu_toggle_floating_full_keyboard_button), true, game::toggleFloatingFullKeyboardButtonVisibility));
+        options.add(new MenuOption(getString(R.string.game_menu_toggle_mouse_mode_button), true, game::toggleOverlayMouseModeButtonVisibility));
         options.add(new MenuOption(getString(R.string.game_menu_toggle_keyboard_model), true, game::toggleKeyboardController));
         if (!game.isOnExternalDisplay()) {
             options.add(new MenuOption(getString(R.string.game_menu_toggle_virtual_model), true, game::toggleVirtualController));
